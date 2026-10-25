@@ -387,10 +387,6 @@ function App() {
         <span className="vn-name">DOLLIE</span>
         <p className="vn-line">{rules ? LINES.rules : playing ? LINES.playing : LINES.intro}</p>
       </div>
-
-      <footer className="credit">
-        &copy; 2026 <a href="https://layba.dev" target="_blank" rel="noreferrer">layba.dev</a>
-      </footer>
     </main>
   )
 }
