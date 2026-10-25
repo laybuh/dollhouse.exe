@@ -124,12 +124,12 @@ input:focus-visible {
 
 .closet {
   position: absolute;
-  top: 14cqw;
+  top: 5cqw;
   right: 1.8cqw;
   display: flex;
   flex-direction: column;
   width: 46cqw;
-  max-height: calc(100% - 16cqw);
+  max-height: calc(100% - 6.8cqw);
   background: rgba(10, 6, 9, 0.9);
   border: 0.25cqw solid var(--pink-2);
   box-shadow: 0.5cqw 0.5cqw 0 var(--pink-5);
@@ -534,5 +534,375 @@ input:focus-visible {
   .rules-col li,
   .rules-license {
     font-size: 8px;
+  }
+}
+
+.view {
+  position: relative;
+}
+
+.room {
+  container-type: inline-size;
+}
+
+.look-arrow {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .app {
+    gap: 14px;
+    padding: 14px 12px 24px;
+  }
+
+  .view {
+    overflow: hidden;
+    aspect-ratio: 188 / 197;
+    border: 2px solid var(--pink-2);
+    box-shadow: 4px 4px 0 var(--pink-5);
+  }
+
+  .room {
+    width: 200%;
+    border: 0;
+    box-shadow: none;
+    transition: transform 0.7s ease;
+  }
+
+  .room-right {
+    transform: translateX(-50%);
+  }
+
+  .look-arrow {
+    position: absolute;
+    bottom: 10px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    font-family: var(--pixel);
+    font-size: 11px;
+    color: #1a0a14;
+    background: var(--pink-2);
+    border: 2px solid var(--pink-1);
+    box-shadow: 2px 2px 0 var(--pink-5), 0 0 14px rgba(255, 79, 174, 0.8);
+  }
+
+  .look-right {
+    right: 10px;
+  }
+
+  .look-left {
+    left: 10px;
+  }
+
+  .play {
+    padding: 12px 18px;
+    font-size: 11px;
+  }
+
+  .rules-btn {
+    top: 10px;
+    right: 10px;
+    font-size: 9px;
+    padding: 6px 8px;
+  }
+
+  .closet-bar {
+    padding: 8px 10px;
+    font-size: 10px;
+  }
+
+  .closet-close {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+
+  .steps {
+    gap: 8px;
+  }
+
+  .step {
+    gap: 10px;
+    font-size: 20px;
+  }
+
+  .step .mini-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 11px;
+  }
+
+  .step-count {
+    min-width: 5ch;
+  }
+
+  .palette {
+    gap: 10px;
+  }
+
+  .swatches {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .swatch {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    font-size: 18px;
+  }
+
+  .swatch-chip {
+    width: 16px;
+    height: 16px;
+  }
+
+  .hex input[type='color'] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .hex input[type='text'] {
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .hex-hint {
+    font-size: 8px;
+  }
+
+  .mini-toggle {
+    padding: 10px;
+    font-size: 9px;
+  }
+
+  .closet-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 14px;
+    font-size: 10px;
+  }
+
+  .vn-box {
+    padding: 1.1rem 1rem 0.7rem;
+  }
+
+  .vn-line {
+    font-size: 8px;
+    line-height: 2;
+  }
+
+  .rules-page {
+    margin-top: 14px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .room {
+      transition: none;
+    }
+  }
+}
+
+.swatch-group {
+  font-family: var(--pixel);
+  font-size: max(7px, 0.75cqw);
+  letter-spacing: 0.1cqw;
+  color: #f8d3e9;
+}
+
+.closet-body > *,
+.palette > * {
+  min-width: 0;
+}
+
+.closet-actions .btn {
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .closet {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .closet-body {
+    overflow-x: hidden;
+  }
+
+  .hex {
+    min-width: 0;
+  }
+
+  .swatch-group {
+    font-size: 8px;
+  }
+}
+
+.mode-tabs {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .mode-tabs {
+    display: flex;
+    gap: 8px;
+  }
+
+  .mode-tab {
+    flex: 1;
+    padding: 10px;
+    font-family: var(--pixel);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--pink-1);
+    background: transparent;
+    border: 2px solid var(--pink-2);
+  }
+
+  .mode-tab-on {
+    color: #1a0a14;
+    background: var(--pink-2);
+  }
+
+  .closet-body[data-mode='room'] .only-avatar,
+  .closet-body[data-mode='avatar'] .only-room {
+    display: none;
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .swatch {
+    min-width: 0;
+    padding: 6px;
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 700px) {
+  .closet {
+    max-height: none;
+    height: auto;
+  }
+
+  .closet-body {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+.all-btn {
+  padding: 0 0.5cqw;
+  height: max(20px, 2.4cqw);
+  font-family: var(--pixel);
+  font-size: max(7px, 0.7cqw);
+  color: var(--pink-1);
+  background: transparent;
+  border: 0.2cqw solid rgba(240, 168, 210, 0.5);
+}
+
+.all-btn:hover {
+  color: #1a0a14;
+  background: var(--pink-2);
+}
+
+.picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(5, 2, 8, 0.7);
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 860px);
+  max-height: 86vh;
+  background: #0a0609;
+  border: 2px solid var(--pink-2);
+  box-shadow: 4px 4px 0 var(--pink-5), 0 0 24px rgba(240, 168, 210, 0.2);
+}
+
+.picker .closet-bar {
+  padding: 8px 10px 8px 14px;
+  font-size: 10px;
+}
+
+.picker .closet-close {
+  width: 22px;
+  height: 22px;
+  font-size: 10px;
+}
+
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 10px;
+  padding: 14px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pink-2) #1a0a14;
+}
+
+.pick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  padding: 6px;
+  background: radial-gradient(ellipse at 50% 70%, rgba(240, 168, 210, 0.12), transparent 70%), #120812;
+  border: 2px solid rgba(240, 168, 210, 0.3);
+}
+
+.pick:hover {
+  border-color: var(--pink-2);
+}
+
+.pick-on {
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255, 143, 200, 0.6);
+}
+
+.pick canvas {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.pick-off {
+  font-family: var(--pixel);
+  font-size: 10px;
+  color: var(--pink-1);
+}
+
+@media (max-width: 700px) {
+  .all-btn {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 9px;
+  }
+
+  .picker-grid {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 8px;
+    padding: 10px;
   }
 }

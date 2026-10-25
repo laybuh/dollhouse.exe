@@ -7,15 +7,17 @@ const HAIR_END = { short: 22, medium: 31, long: 44 };
 const H = (hairStyle, hairLength = 'medium', bangs = false) => ({ hairStyle, hairLength, bangs });
 export const HAIRS = [
   H('wavy'),
-  H('curly', 'short'), H('curly'), H('curly', 'long'), H('curly', 'medium', true), H('curlybun'),
+  H('curly', 'short'), H('curly'), H('curly', 'long'), H('curly', 'medium', true), H('bald', 'short'), H('curlybun'),
   H('coily', 'short'), H('coily'), H('coily', 'long'), H('coily', 'medium', true), H('highpuff'),
   H('wavy', 'short'), H('wavy', 'short', true), H('wavy', 'long'), H('wavy', 'medium', true), H('wavy', 'long', true), H('wavybun'), H('wavypony'),
   H('straight', 'short'), H('straight', 'short', true), H('straight'), H('straight', 'medium', true), H('straight', 'long'), H('straight', 'long', true), H('sleekbun'), H('ponytail'), H('pigtails'),
+  H('pixie', 'short'), H('crop', 'short'), H('wavycrop', 'short'), H('wavyswept', 'short'), H('curlytop', 'short'), H('curlycrop', 'short'), H('coilyfade', 'short'), H('mullet', 'short'),
   H('puffs', 'short'), H('puffs'), H('puffs', 'long'),
   H('twists', 'short'), H('twists'), H('twists', 'long'), H('twists', 'long', true), H('twistbun'),
   H('braids', 'short'), H('braids'), H('braids', 'long'), H('braids', 'long', true), H('braidbun'),
   H('locs', 'short'), H('locs'), H('locs', 'long'), H('locs', 'long', true), H('locbun'),
-  H('curly', 'short', true), H('curlypony'), H('curlypigtails'), H('coily', 'long', true), H('coilypuff'), H('curly', 'long', true)
+  H('curly', 'short', true), H('curlypony'), H('curlypigtails'), H('coily', 'long', true), H('coilypuff'), H('curly', 'long', true),
+  H('halfup'), H('sidepart'), H('curtainbangs'), H('wavyhalfup'), H('wavylob')
 ];
 
 export const HIJABS = ['none', 'wrap', 'amira', 'long'];
@@ -61,6 +63,23 @@ const hash = (xx, yy) => {
 const STRANDS = ['braids', 'twists', 'locs'];
 const FLUFFY = ['curly', 'coily'];
 const TEX = { curlybun: 'curly', highpuff: 'coily', puffs: 'coily', sleekbun: 'straight', ponytail: 'straight', pigtails: 'straight', wavybun: 'wavy', wavypony: 'wavy', curlypony: 'curly', curlypigtails: 'curly', coilypuff: 'coily', braidbun: 'braids', locbun: 'locs', twistbun: 'twists' };
+const MASC = {
+  pixie: { tex: 'straight', crown: [17.5, 10.5, 9.8, 9.5], cut: 15, line: (xx, yy) => yy <= 6 || (yy <= 11 && xx >= 15 + (yy - 6) * 1.5) },
+  crop: { tex: 'straight', crown: [17.5, 10.5, 9.5, 9], cut: 14, line: (xx, yy) => yy <= 7 || (yy === 8 && xx % 2 === 0) },
+  wavycrop: { tex: 'wavy', crown: [17.5, 10, 10, 9.5], cut: 15, line: (xx, yy) => yy <= 6 || (yy <= 8 && xx >= 19) },
+  wavyswept: { tex: 'wavy', crown: [17.5, 8.5, 10, 9.5], cut: 14, line: (xx, yy) => yy <= 5 },
+  curlytop: { tex: 'curly', crown: [17.5, 7, 10.5, 8], cut: 14, fade: true, line: (xx, yy) => yy <= 5 || (yy === 6 && xx % 3 !== 1) },
+  curlycrop: { tex: 'curly', crown: [17.5, 10, 10, 9.5], cut: 15, line: (xx, yy) => yy <= 5 || (yy === 6 && xx % 3 !== 1) },
+  coilyfade: { tex: 'coily', crown: [17.5, 8, 10, 7.5], cut: 14, fade: true, line: (xx, yy) => yy <= 5 },
+  mullet: { tex: 'wavy', crown: [17.5, 10.5, 10.5, 10], cut: 13, tail: 28, line: (xx, yy) => yy <= 7 || (yy === 8 && xx % 3 !== 1) }
+};
+const EXTRAS = {
+  halfup: { tex: 'straight', end: 44, knot: true, line: (xx, yy) => yy <= 5 || (yy <= 8 && (xx <= 11 || xx >= 24)) },
+  sidepart: { tex: 'straight', end: 44, line: (xx, yy) => yy <= 5 || (yy <= 12 && xx <= 21 - (yy - 5) * 1.4) },
+  curtainbangs: { tex: 'straight', end: 31, part: true, line: (xx, yy) => yy <= 5 || (yy <= 10 && (xx <= 13 - (yy - 6) || xx >= 22 + (yy - 6))) },
+  wavyhalfup: { tex: 'wavy', end: 36, knot: true, line: (xx, yy) => yy <= 6 },
+  wavylob: { tex: 'wavy', end: 26, part: true, line: (xx, yy) => yy <= 5 || (yy <= 7 && (xx <= 11 || xx >= 24)) }
+};
 const UPDOS = ['curlybun', 'highpuff', 'sleekbun', 'ponytail', 'wavybun', 'wavypony', 'pigtails', 'curlypony', 'curlypigtails', 'coilypuff', 'braidbun', 'locbun', 'twistbun', 'puffs'];
 const ROPE_BUNS = ['braidbun', 'locbun', 'twistbun'];
 const OPENING = { wrap: [7.2, 7.6], amira: [6.9, 7.4], long: [7.2, 7.6] };
@@ -68,6 +87,9 @@ const inOval = (xx, yy, [rx, ry]) => ((xx - 17.5) / rx) ** 2 + ((yy - 14.5) / ry
 
 function hairline(style, tex, bangs, kind) {
   if (style === 'hijab') return (xx, yy) => inOval(xx, yy, OPENING[kind]) > 1;
+  if (style === 'bald') return () => false;
+  if (MASC[style]) return MASC[style].line;
+  if (EXTRAS[style]) return EXTRAS[style].line;
   if (UPDOS.includes(style)) return (xx, yy) => yy <= 5;
   if (bangs) {
     if (tex === 'wavy' || tex === 'straight') return (xx, yy) => yy <= 8 || (yy === 9 && (xx < 12 || xx > 23));
@@ -103,7 +125,7 @@ export function buildDoll(look, blink = false) {
     shoe: look.shoes, shoeHi: shade(look.shoes, 0.2)
   };
   const style = kind ? 'hijab' : HAIRS.some(h => h.hairStyle === look.hairStyle) ? look.hairStyle : 'wavy';
-  const tex = TEX[style] || style;
+  const tex = MASC[style]?.tex || EXTRAS[style]?.tex || TEX[style] || style;
   const len = HAIR_END[look.hairLength] ? look.hairLength : 'medium';
   const end = HAIR_END[len];
 
@@ -182,20 +204,35 @@ export function buildDoll(look, blink = false) {
       for (let xx = Math.round(6 - hw); xx <= Math.round(6 + hw); xx++) put(xx, yy, C.hair);
     }
     rect(4, 17, 5, 1, C.hairSh); rect(27, 17, 5, 1, C.hairSh);
+  } else if (style === 'bald') {
+    ell(17.5, 12, 8, 10.5, C.skin);
+    px(13, 4, tint(look.skin, 1.12)); px(14, 3, tint(look.skin, 1.12)); px(15, 3, tint(look.skin, 1.12));
+  } else if (MASC[style]) {
+    const m = MASC[style];
+    ell(m.crown[0], m.crown[1], m.crown[2], m.crown[3], C.hair);
+    for (let yy = m.cut + 1; yy <= 22; yy++) for (let xx = 0; xx < GW; xx++) if (get(xx, yy) === C.hair) px(xx, yy, null);
+    if (m.tail) for (let yy = 13; yy <= m.tail; yy++) { const w = yy > m.tail - 3 ? 2 : 3; for (let xx = 9; xx < 9 + w; xx++) put(xx, yy, C.hair); }
+    if (m.fade) for (let yy = 9; yy <= m.cut; yy++) for (let xx = 0; xx < GW; xx++) if (get(xx, yy) === C.hair && (xx <= 10 || xx >= 25)) px(xx, yy, C.hairSh);
   } else if (style === 'coily' && len === 'short') {
     ell(17.5, 10.5, 10, 9.5, C.hair);
   } else {
-    const crown = { wavy: [12.5, 11], straight: [10.5, 11], curly: [13.5, 11.5], coily: [15.5, 12.5] }[style];
+    const extra = EXTRAS[style];
+    const shape = extra ? extra.tex : style;
+    const stop = extra ? extra.end : end;
+    const crown = { wavy: [12.5, 11], straight: [10.5, 11], curly: [13.5, 11.5], coily: [15.5, 12.5] }[shape];
     ell(17.5, 11, crown[0], crown[1], C.hair);
-    for (let yy = 14; yy <= end; yy++) {
-      const d = yy - 14, left = end - yy;
+    for (let yy = 14; yy <= stop; yy++) {
+      const d = yy - 14, left = stop - yy;
       let l = 7, r = 28;
-      if (style === 'wavy') { l = 7 + 1.8 * Math.sin(d * 0.6); r = 28 + 1.8 * Math.sin(d * 0.6 + 2.2); }
-      if (style === 'curly') { l = 5.5 - d * 0.1 + 1.4 * Math.sin(d * 1.2); r = 29.5 + d * 0.1 + 1.4 * Math.sin(d * 1.2 + 1); }
-      if (style === 'coily') { l = 3.5 - d * 0.1 + Math.sin(d * 1.7); r = 31.5 + d * 0.1 + Math.sin(d * 1.7 + 1.3); }
-      const taper = style === 'straight' ? 0 : Math.max(0, 3 - left) * (style === 'coily' ? 2 : 1.2);
+      if (shape === 'wavy') { l = 7 + 1.8 * Math.sin(d * 0.6); r = 28 + 1.8 * Math.sin(d * 0.6 + 2.2); }
+      if (shape === 'curly') { l = 5.5 - d * 0.1 + 1.4 * Math.sin(d * 1.2); r = 29.5 + d * 0.1 + 1.4 * Math.sin(d * 1.2 + 1); }
+      if (shape === 'coily') { l = 3.5 - d * 0.1 + Math.sin(d * 1.7); r = 31.5 + d * 0.1 + Math.sin(d * 1.7 + 1.3); }
+      if (extra && shape === 'wavy') { l = 7 + 1.8 * Math.sin(d * 0.6); r = 35 - l; }
+      const taper = shape === 'straight' ? 0 : Math.max(0, 3 - left) * (shape === 'coily' ? 2 : 1.2);
       for (let xx = Math.round(l + taper); xx <= Math.round(r - taper); xx++) px(xx, yy, C.hair);
     }
+    if (extra?.knot) { ell(17.5, 0.5, 3.5, 2.5, C.hair); rect(15, 3, 6, 1, C.hairSh); }
+    if (extra?.part) for (let yy = 1; yy <= 5; yy++) { px(17, yy, C.hairSh); px(18, yy, C.hairSh); }
   }
 
   const isHair = (xx, yy) => get(xx, yy) === C.hair;
@@ -215,6 +252,7 @@ export function buildDoll(look, blink = false) {
     if (!isHair(xx, yy)) continue;
     const h = hash(xx, yy + OY) % 9;
     if (tex === 'straight' && yy <= 6 && yy === 2 + Math.round(((xx - 17.5) / 7) ** 2 * 2)) px(xx, yy, C.hairHi);
+    if (MASC[style] && tex === 'wavy' && yy > 0 && (xx + yy * 2) % 7 === 0) px(xx, yy, C.hairSh);
     if (tex === 'straight' && style !== 'straight' && yy < 0 && yy === -4 + Math.round(((xx - 17.5) / 4) ** 2)) px(xx, yy, C.hairHi);
     if (style === 'ponytail' && yy > 2 && xx === Math.round(27.5 + 2.2 * Math.sin((yy + 3) * 0.11))) px(xx, yy, C.hairMid);
     if (tex === 'wavy' && (xx * 2 + yy) % 9 === 0 && (yy > 14 || yy < 1)) px(xx, yy, C.hairSh);

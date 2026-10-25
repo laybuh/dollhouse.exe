@@ -1,4 +1,6 @@
-import { GW, GH, DEFAULT_LOOK, buildDoll } from './girl';
+import { GW, GH, DEFAULT_LOOK, buildDoll, shade } from './girl';
+
+export const DEFAULT_ROOM = { wall: '#9c5c7e', floor: '#1b131f', bed: '#cf7a93', rug: '#cf7a93' };
 
 export function startRoom(cv, grainCv) {
   const W = 407, H = 204, VX = 24;
@@ -64,7 +66,8 @@ export function startRoom(cv, grainCv) {
     wallA[j * WALL_W + i] = th;
   }
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-  const SMOKE = [[26, 15, 32], [44, 25, 48], [74, 40, 66], [112, 62, 94], [156, 92, 126]];
+  let SMOKE = [[26, 15, 32], [44, 25, 48], [74, 40, 66], [112, 62, 94], [156, 92, 126]];
+  let RUG = P.pink;
   const PURPLE = [[24, 15, 36], [40, 26, 62], [66, 42, 104], [102, 70, 152], [140, 104, 190]];
   function drawSmokeWall() {
     const tt = still ? 0 : t;
@@ -193,10 +196,10 @@ export function startRoom(cv, grainCv) {
   }
 
   function rug() {
-    R(135, 165, 78, 21, P.pink);
-    R(137, 163, 74, 2, P.pink);
-    R(133, 168, 2, 15, P.pink); R(213, 167, 2, 16, P.pink);
-    R(137, 186, 74, 1, P.pink);
+    R(135, 165, 78, 21, RUG);
+    R(137, 163, 74, 2, RUG);
+    R(133, 168, 2, 15, RUG); R(213, 167, 2, 16, RUG);
+    R(137, 186, 74, 1, RUG);
   }
 
   function nightstand() {
@@ -410,6 +413,15 @@ export function startRoom(cv, grainCv) {
   gc.putImageData(img, 0, 0);
 
   return {
+    setColors(room) {
+      const n = parseInt(room.wall.slice(1), 16), rgb = [n >> 16, (n >> 8) & 255, n & 255];
+      SMOKE = [0.17, 0.29, 0.47, 0.72, 1].map(k => rgb.map(v => v * k));
+      P.trim = room.wall;
+      P.floor = room.floor;
+      P.pink = room.bed; P.pinkL = shade(room.bed, 0.15); P.pinkD = shade(room.bed, -0.2);
+      RUG = room.rug;
+      wallT = -1;
+    },
     setLook(next) {
       look = next;
       girlGrids = {};
