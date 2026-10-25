@@ -19,7 +19,7 @@ const HOW_TO = [
   ['dresses vs. separates:', 'picking a dress swaps out the tops and bottoms, and picking tops or bottoms swaps them back in.'],
   ['colors:', 'use the color picker or type in a hex code to recolor any section.'],
   ['room:', 'switch to the room colors to recolor the walls, floor, bed and rug.'],
-  ['download', 'just your avatar or download your whole room too.'],
+  ['download', 'just your doll or download your whole room too.'],
   ['reset', 'brings back the default look.'],
   ['extras:', 'click dollie to make her hop, and click the lamp to turn the light on or off.'],
   ['', 'your look saves automatically in this browser, so it will be here when you come back.']
@@ -365,7 +365,7 @@ function App() {
                 )}
               </div>
               <div className="closet-actions">
-                <button type="button" className="btn" onClick={() => downloadLook(look)}>download avatar</button>
+                <button type="button" className="btn" onClick={() => downloadLook(look)}>download doll</button>
                 <button type="button" className="btn" onClick={() => downloadRoom(mainRef.current)}>download room</button>
                 <button type="button" className="btn btn-ghost" onClick={() => { setLook(DEFAULT_LOOK); setRoomColors(DEFAULT_ROOM) }}>reset</button>
               </div>
