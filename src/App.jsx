@@ -94,7 +94,13 @@ function downloadLook(look) {
   c.width = GW * ICON
   c.height = GH * ICON
   drawDoll(c.getContext('2d'), buildDoll(look), 0, 0, ICON)
-  saveCredited(c, 'dollie.png')
+  const out = document.createElement('canvas')
+  out.width = c.width
+  out.height = c.height
+  const octx = out.getContext('2d')
+  octx.filter = 'contrast(1.05) saturate(1.1)'
+  octx.drawImage(c, 0, 0)
+  saveCredited(out, 'dollie.png')
 }
 
 async function downloadRoom(room) {
@@ -104,7 +110,19 @@ async function downloadRoom(room) {
   c.height = room.height * ROOM_SCALE
   const ctx = c.getContext('2d')
   ctx.imageSmoothingEnabled = false
+  ctx.filter = 'contrast(1.05) saturate(1.1)'
   ctx.drawImage(room, 0, 0, c.width, c.height)
+  ctx.filter = 'none'
+  ctx.save()
+  ctx.translate(c.width * 0.4, c.height * 0.45)
+  ctx.scale(c.width / c.height, 1)
+  const r = Math.hypot(0.6 * c.height, 0.55 * c.height)
+  const v = ctx.createRadialGradient(0, 0, 0, 0, 0, r)
+  v.addColorStop(0.35, 'rgba(5,2,8,0)')
+  v.addColorStop(1, 'rgba(5,2,8,0.65)')
+  ctx.fillStyle = v
+  ctx.fillRect(-c.width, -c.height, c.width * 2, c.height * 2)
+  ctx.restore()
   ctx.font = `${Math.round(c.width * 0.07)}px "Allura"`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
