@@ -6,9 +6,9 @@ const STORE = 'dollie-look-v5'
 const HEX = /^#?([0-9a-f]{6})$/i
 const ICON = 3
 const LINES = {
-  intro: 'Welcome to dollie.exe, a dress-up game with an aesthetic atmosphere! Play the game to give me a whole new look.',
-  playing: 'Use the arrows to try on styles and tap a color chip to recolor anything. Hit download to save your look as a little icon!',
-  rules: "Here's how to play and how you can use your dolls. Hit back whenever you're ready to play!"
+  intro: 'Welcome to dollie.exe, a cozy dress-up game with an aesthetic atmosphere! Play the game to give me a whole new look.',
+  playing: 'Click the arrows to try on different styles. Use the color picker to change the colors. When you love your look, you can download it!',
+  rules: "Here's how to play and how you can use your dolls. Come back whenever you're ready to play!"
 }
 
 const HOW_TO = [
