@@ -906,3 +906,9 @@ input:focus-visible {
     padding: 10px;
   }
 }
+
+.app-intro {
+  min-height: 100vh;
+  min-height: 100svh;
+  justify-content: center;
+}

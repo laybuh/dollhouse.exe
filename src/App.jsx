@@ -307,7 +307,7 @@ function App() {
   }
 
   return (
-    <main className="app">
+    <main className={playing ? 'app' : 'app app-intro'}>
       <div className="stage">
         <div className="view">
           <div className={lookRight ? 'room room-right' : 'room'}>
