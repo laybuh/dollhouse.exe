@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { startRoom, DEFAULT_ROOM } from './room'
-import { DEFAULT_LOOK, HAIRS, HIJABS, isHijab, TOPS, BOTTOMS, DRESSES, BODIES, FULLNESS, SHOES, GW, GH, buildDoll, drawDoll } from './girl'
+import { DEFAULT_LOOK, HAIRS, HIJABS, isHijab, TOPS, BOTTOMS, DRESSES, BODIES, FULLNESS, NECKS, SHOES, GW, GH, buildDoll, drawDoll } from './girl'
 
 const STORE = 'dollie-look-v5'
 const HEX = /^#?([0-9a-f]{6})$/i
@@ -187,7 +187,7 @@ function Stepper({ label, onStep, dim, onAll }) {
   )
 }
 
-const CROPS = { hair: [0, 36, 3], headwear: [0, 36, 3], face: [2, 28, 4], shoes: [44, 24, 3] }
+const CROPS = { hair: [0, 36, 3], headwear: [0, 36, 3], face: [2, 28, 4], neck: [2, 28, 4], shoes: [44, 24, 3] }
 
 function Thumb({ look, crop }) {
   const ref = useRef(null)
@@ -298,6 +298,7 @@ function App() {
   const pickers = {
     body: () => BODIES.map(b => ({ id: b, label: b, on: look.body === b, look: { ...look, body: b }, apply: { body: b } })),
     face: () => FULLNESS.map(f => ({ id: f, label: f, on: look.fullness === f, look: { ...look, fullness: f }, apply: { fullness: f } })),
+    neck: () => NECKS.map(f => ({ id: f, label: f, on: look.neck === f, look: { ...look, neck: f }, apply: { neck: f } })),
     shoes: () => SHOES.map(s => ({ id: s, label: s, on: look.shoe === s, look: { ...look, shoe: s }, apply: { shoe: s } })),
     hair: () => HAIRS.map((h, i) => ({ id: i, label: String(i + 1), on: i === hairIndex && !hijabOn, look: { ...look, ...h, ...(hijabOn ? { hijab: 'none' } : {}) }, apply: { ...h, ...(hijabOn ? { hijab: 'none' } : {}) } })),
     headwear: () => HIJABS.map(k => ({ id: k, label: k, empty: k === 'none', on: look.hijab === k, look: { ...look, hijab: k }, apply: { hijab: k } })),
@@ -346,6 +347,7 @@ function App() {
               <div className="steps only-avatar">
                 <Stepper label="body" onStep={stepIn('body', BODIES)} onAll={() => setPicker('body')} />
                 <Stepper label="face" onStep={stepIn('fullness', FULLNESS)} onAll={() => setPicker('face')} />
+                <Stepper label="neck" onStep={stepIn('neck', NECKS)} onAll={() => setPicker('neck')} />
                 <Stepper label="hair" onStep={stepHair} dim={hijabOn} onAll={() => setPicker('hair')} />
                 <Stepper label="headwear" onStep={stepIn('hijab', HIJABS)} onAll={() => setPicker('headwear')} />
                 <Stepper label="tops" onStep={stepIn('top', TOPS, { dress: 'none' })} dim={dressOn} onAll={() => setPicker('tops')} />

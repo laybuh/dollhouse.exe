@@ -33,10 +33,11 @@ export const DRESSES = ['none', ...Object.keys(DRESS_SLEEVE)];
 
 export const BODIES = ['petite', 'slim', 'curvy', 'midsize', 'plus', 'plus2', 'plus3', 'plus4'];
 export const FULLNESS = ['thin', 'medium', 'full', 'fuller', 'fullest'];
+export const NECKS = ['slim', 'medium', 'thick', 'thicker'];
 export const SHOES = ['boots', 'sneakers', 'maryjanes', 'kneeboots', 'sandals'];
 
 export const DEFAULT_LOOK = {
-  body: 'curvy', shoe: 'boots', socksOn: true, fullness: 'medium', blushOn: false, linerOn: false, liner: '#5a2a1e',
+  body: 'curvy', shoe: 'boots', socksOn: true, fullness: 'medium', neck: 'slim', blushOn: false, linerOn: false, liner: '#5a2a1e',
   hairStyle: 'wavy', hairLength: 'medium', bangs: false, hijab: 'none',
   top: 'tee', bottom: 'pleated', dress: 'none',
   skin: '#b39169', hair: '#2a1f21', hijabColor: '#141114', lips: '#8b4a2f', blush: '#b28562',
@@ -311,7 +312,8 @@ export function buildDoll(look, blink = false) {
   }
 
   if (top === 'hoodie') rect(12, 22, 12, 4, T.sh);
-  rect(16, 22, 4, 4, C.skin);
+  const nw = { slim: 4, medium: 6, thick: 8, thicker: 10 }[look.neck] || 4;
+  rect(18 - nw / 2, 22, nw, 4, C.skin);
   rect(12, 26, 12, 1, C.skin); rect(11, 27, 14, 10, C.skin); rect(12, 37, 12, 9, C.skin);
   rect(9, 27, 3, 4, C.skin); rect(24, 27, 3, 4, C.skin);
 
