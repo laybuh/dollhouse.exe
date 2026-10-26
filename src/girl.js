@@ -7,20 +7,23 @@ const HAIR_END = { short: 22, medium: 31, long: 44 };
 const H = (hairStyle, hairLength = 'medium', bangs = false) => ({ hairStyle, hairLength, bangs });
 export const HAIRS = [
   H('wavy'),
-  H('curly', 'short'), H('curly'), H('curly', 'long'), H('curly', 'medium', true), H('bald', 'short'), H('curlybun'),
-  H('coily', 'short'), H('coily'), H('coily', 'long'), H('coily', 'medium', true), H('highpuff'),
-  H('wavy', 'short'), H('wavy', 'short', true), H('wavy', 'long'), H('wavy', 'medium', true), H('wavy', 'long', true), H('wavybun'), H('wavypony'),
+  H('curly', 'short'), H('curly'), H('curly', 'long'), H('curly', 'medium', true), H('curly', 'medium', 'light'), H('curly', 'short', 'light'), H('curlyhalfup'), H('curlylob'), H('bald', 'short'), H('curlybun'),
+  H('coily', 'short'), H('coily'), H('coily', 'long'), H('coily', 'medium', 'side'), H('coily', 'short', 'light'), H('coily', 'medium', 'light'), H('coilyhalfup'), H('coily', 'short', 'side'), H('coilylob'), H('highpuff'),
+  H('wavy', 'short'), H('wavy', 'short', true), H('wavy', 'long'), H('wavy', 'medium', true), H('wavy', 'medium', 'light'), H('wavy', 'long', true), H('wavy', 'long', 'light'), H('wavy', 'short', 'light'), H('wavy', 'long', 'side'), H('wavycurtain'), H('wavybun'), H('wavypony'),
   H('straight', 'short'), H('straight', 'short', true), H('straight'), H('straight', 'medium', true), H('straight', 'long'), H('straight', 'long', true), H('sleekbun'), H('ponytail'), H('pigtails'),
   H('pixie', 'short'), H('crop', 'short'), H('wavycrop', 'short'), H('wavyswept', 'short'), H('curlytop', 'short'), H('curlycrop', 'short'), H('coilyfade', 'short'), H('mullet', 'short'),
   H('puffs', 'short'), H('puffs'), H('puffs', 'long'),
   H('twists', 'short'), H('twists'), H('twists', 'long'), H('twists', 'long', true), H('twistbun'),
   H('braids', 'short'), H('braids'), H('braids', 'long'), H('braids', 'long', true), H('braidbun'),
   H('locs', 'short'), H('locs'), H('locs', 'long'), H('locs', 'long', true), H('locbun'),
-  H('curly', 'short', true), H('curlypony'), H('curlypigtails'), H('coily', 'long', true), H('coilypuff'), H('curly', 'long', true),
+  H('curly', 'short', 'side'), H('curlypony'), H('curlypigtails'), H('coily', 'long', 'side'), H('coilypuff'), H('curly', 'long', 'side'), H('curly', 'long', 'light'),
   H('halfup'), H('sidepart'), H('curtainbangs'), H('wavyhalfup'), H('wavylob')
 ];
 
-export const HIJABS = ['none', 'wrap', 'amira', 'long'];
+const HIJAB_KINDS = ['wrap', 'amira', 'long'];
+const HATS = ['beanie', 'beret', 'bucket', 'cap', 'sunhat', 'bandana'];
+export const HIJABS = ['none', ...HIJAB_KINDS, ...HATS];
+export const isHijab = (key) => HIJAB_KINDS.includes(key);
 
 const TOP_SLEEVE = { tee: 'short', crop: 'short', tank: 'none', longsleeve: 'long', button: 'long', turtleneck: 'long', hoodie: 'long', tunic: 'long' };
 const DRESS_SLEEVE = { sundress: 'none', babydoll: 'puff', slip: 'none', bodycon: 'none', long: 'long', abaya: 'bell' };
@@ -29,9 +32,11 @@ export const BOTTOMS = ['pleated', 'mini', 'midi', 'maxi', 'pants', 'wideleg', '
 export const DRESSES = ['none', ...Object.keys(DRESS_SLEEVE)];
 
 export const BODIES = ['petite', 'slim', 'curvy', 'midsize', 'plus', 'plus2', 'plus3', 'plus4'];
+export const FULLNESS = ['thin', 'medium', 'full', 'fuller', 'fullest'];
+export const SHOES = ['boots', 'sneakers', 'maryjanes', 'kneeboots', 'sandals'];
 
 export const DEFAULT_LOOK = {
-  body: 'curvy', blushOn: true,
+  body: 'curvy', shoe: 'boots', socksOn: true, fullness: 'medium', blushOn: false, linerOn: false, liner: '#5a2a1e',
   hairStyle: 'wavy', hairLength: 'medium', bangs: false, hijab: 'none',
   top: 'tee', bottom: 'pleated', dress: 'none',
   skin: '#b39169', hair: '#2a1f21', hijabColor: '#141114', lips: '#8b4a2f', blush: '#b28562',
@@ -52,6 +57,12 @@ function tint(hex, f) {
     .map(v => Math.min(255, Math.round(v * f + 8)).toString(16).padStart(2, '0')).join('');
 }
 
+function mix(a, b, t) {
+  const p = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const x = p(a), y = p(b);
+  return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+
 const tone = (hex) => ({ c: hex, sh: shade(hex, -0.4), hi: shade(hex, 0.15) });
 
 const hash = (xx, yy) => {
@@ -65,7 +76,7 @@ const FLUFFY = ['curly', 'coily'];
 const TEX = { curlybun: 'curly', highpuff: 'coily', puffs: 'coily', sleekbun: 'straight', ponytail: 'straight', pigtails: 'straight', wavybun: 'wavy', wavypony: 'wavy', curlypony: 'curly', curlypigtails: 'curly', coilypuff: 'coily', braidbun: 'braids', locbun: 'locs', twistbun: 'twists' };
 const MASC = {
   pixie: { tex: 'straight', crown: [17.5, 10.5, 9.8, 9.5], cut: 15, line: (xx, yy) => yy <= 6 || (yy <= 11 && xx >= 15 + (yy - 6) * 1.5) },
-  crop: { tex: 'straight', crown: [17.5, 10.5, 9.5, 9], cut: 14, line: (xx, yy) => yy <= 7 || (yy === 8 && xx % 2 === 0) },
+  crop: { tex: 'straight', crown: [17.5, 10.5, 9.5, 9], cut: 14, line: (xx, yy) => yy <= 7 || (yy === 8 && xx % 4 !== 1) },
   wavycrop: { tex: 'wavy', crown: [17.5, 10, 10, 9.5], cut: 15, line: (xx, yy) => yy <= 6 || (yy <= 8 && xx >= 19) },
   wavyswept: { tex: 'wavy', crown: [17.5, 8.5, 10, 9.5], cut: 14, line: (xx, yy) => yy <= 5 },
   curlytop: { tex: 'curly', crown: [17.5, 7, 10.5, 8], cut: 14, fade: true, line: (xx, yy) => yy <= 5 || (yy === 6 && xx % 3 !== 1) },
@@ -78,6 +89,11 @@ const EXTRAS = {
   sidepart: { tex: 'straight', end: 44, line: (xx, yy) => yy <= 5 || (yy <= 12 && xx <= 21 - (yy - 5) * 1.4) },
   curtainbangs: { tex: 'straight', end: 31, part: true, line: (xx, yy) => yy <= 5 || (yy <= 10 && (xx <= 13 - (yy - 6) || xx >= 22 + (yy - 6))) },
   wavyhalfup: { tex: 'wavy', end: 36, knot: true, line: (xx, yy) => yy <= 6 },
+  curlyhalfup: { tex: 'curly', end: 36, knot: true, line: (xx, yy) => yy <= 5 || (yy === 6 && xx % 3 !== 1) },
+  curlylob: { tex: 'curly', end: 26, part: true, line: (xx, yy) => yy <= 5 || (yy <= 7 && (xx <= 11 || xx >= 24)) },
+  coilyhalfup: { tex: 'coily', end: 31, knot: true, line: (xx, yy) => yy <= 5 || (yy === 6 && xx % 2 === 0) },
+  coilylob: { tex: 'coily', end: 27, part: true, line: (xx, yy) => yy <= 5 || (yy <= 7 && (xx <= 11 || xx >= 24)) },
+  wavycurtain: { tex: 'wavy', end: 44, part: true, line: (xx, yy) => yy <= 5 || (yy <= 10 && (xx <= 13 - (yy - 6) || xx >= 22 + (yy - 6))) },
   wavylob: { tex: 'wavy', end: 26, part: true, line: (xx, yy) => yy <= 5 || (yy <= 7 && (xx <= 11 || xx >= 24)) }
 };
 const UPDOS = ['curlybun', 'highpuff', 'sleekbun', 'ponytail', 'wavybun', 'wavypony', 'pigtails', 'curlypony', 'curlypigtails', 'coilypuff', 'braidbun', 'locbun', 'twistbun', 'puffs'];
@@ -91,10 +107,15 @@ function hairline(style, tex, bangs, kind) {
   if (MASC[style]) return MASC[style].line;
   if (EXTRAS[style]) return EXTRAS[style].line;
   if (UPDOS.includes(style)) return (xx, yy) => yy <= 5;
+  if (bangs === 'side') return (xx, yy) => yy <= 6 || (yy <= 12 && xx >= 13 + (yy - 6) * 1.6) || (yy === 7 && xx % 3 !== 1);
+  if (bangs === 'light') {
+    if (FLUFFY.includes(tex)) return (xx, yy) => yy <= 5 || (yy <= 7 && xx % 3 !== 1);
+    return (xx, yy) => yy <= 5 || (yy <= 8 && xx % 3 === 0) || (yy === 6 && xx % 2 === 0);
+  }
   if (bangs) {
     if (tex === 'wavy' || tex === 'straight') return (xx, yy) => yy <= 8 || (yy === 9 && (xx < 12 || xx > 23));
-    if (FLUFFY.includes(tex)) return (xx, yy) => yy <= 6 || (yy <= 8 && xx % 3 !== 1);
-    return (xx, yy) => yy <= 6 || (yy <= 9 && xx % 3 !== 1);
+    if (FLUFFY.includes(tex)) return (xx, yy) => yy <= 7 || (yy === 8 && xx % 4 !== 1);
+    return (xx, yy) => yy <= 8 || (yy === 9 && xx % 4 !== 2);
   }
   if (tex === 'wavy') return (xx, yy) => yy <= 6 || (yy <= 13 && xx >= 14 + (yy - 6) * 1.5);
   if (tex === 'straight') return (xx, yy) => yy <= 5 || (yy <= 8 && (xx <= 11 || xx >= 24));
@@ -115,14 +136,15 @@ export function buildDoll(look, blink = false) {
       for (let i = Math.floor(cx - rx); i <= Math.ceil(cx + rx); i++)
         if (((i - cx) / rx) ** 2 + ((j - cy) / ry) ** 2 <= 1) px(i, j, c);
   };
-  const kind = HIJABS.includes(look.hijab) && look.hijab !== 'none' ? look.hijab : null;
+  const kind = isHijab(look.hijab) ? look.hijab : null;
+  const hat = HATS.includes(look.hijab) ? look.hijab : null;
   const base = kind ? look.hijabColor || DEFAULT_LOOK.hijabColor : look.hair;
   const C = {
     skin: look.skin, skinSh: shade(look.skin, -0.12), blush: look.blush,
     lip: look.lips,
-    hair: base, hairSh: shade(base, -0.35), hairHi: tint(base, 1.45), hairMid: tint(base, 1.22), brow: look.brows || shade(look.hair, 0.1), nose: shade(look.skin, -0.18),
+    hair: base, hairSh: shade(base, -0.35), hairHi: tint(base, 1.45), hairMid: tint(base, 1.22), brow: look.brows || shade(look.hair, 0.1), nose: shade(look.skin, -0.32),
     iris: look.eyes || '#4a2f2c', white: '#e5e5f2',
-    shoe: look.shoes, shoeHi: shade(look.shoes, 0.2)
+    shoe: look.shoes
   };
   const style = kind ? 'hijab' : HAIRS.some(h => h.hairStyle === look.hairStyle) ? look.hairStyle : 'wavy';
   const tex = MASC[style]?.tex || EXTRAS[style]?.tex || TEX[style] || style;
@@ -250,12 +272,10 @@ export function buildDoll(look, blink = false) {
   }
   for (let yy = -OY; yy < BH; yy++) for (let xx = 0; xx < GW; xx++) {
     if (!isHair(xx, yy)) continue;
-    const h = hash(xx, yy + OY) % 9;
     if (tex === 'straight' && yy <= 6 && yy === 2 + Math.round(((xx - 17.5) / 7) ** 2 * 2)) px(xx, yy, C.hairHi);
-    if (MASC[style] && tex === 'wavy' && yy > 0 && (xx + yy * 2) % 7 === 0) px(xx, yy, C.hairSh);
     if (tex === 'straight' && style !== 'straight' && yy < 0 && yy === -4 + Math.round(((xx - 17.5) / 4) ** 2)) px(xx, yy, C.hairHi);
     if (style === 'ponytail' && yy > 2 && xx === Math.round(27.5 + 2.2 * Math.sin((yy + 3) * 0.11))) px(xx, yy, C.hairMid);
-    if (tex === 'wavy' && (xx * 2 + yy) % 9 === 0 && (yy > 14 || yy < 1)) px(xx, yy, C.hairSh);
+    const h = hash(xx, yy + OY) % 9;
     if (tex === 'curly') { if (h === 0) px(xx, yy, C.hairHi); else if (h === 1) px(xx, yy, C.hairSh); }
     if (tex === 'coily') { if (h < 2) px(xx, yy, C.hairHi); else if (h < 4) px(xx, yy, C.hairSh); }
   }
@@ -268,8 +288,23 @@ export function buildDoll(look, blink = false) {
 
   [[14, 12], [19, 19]].forEach(([lx, sx]) => {
     rect(lx, 46, 3, 9, C.skin);
-    if (bottom === 'pleated') { rect(lx, 51, 3, 4, K.c); rect(lx, 51, 3, 1, K.hi); }
-    rect(sx, 55, 5, 2, C.shoe); rect(sx, 56, 5, 1, C.shoeHi);
+    const shoe = SHOES.includes(look.shoe) ? look.shoe : 'boots';
+    if (look.socksOn !== false && shoe !== 'kneeboots') rect(lx, 51, 3, 4, K.c);
+    if (shoe === 'boots') {
+      rect(sx, 55, 5, 2, C.shoe);
+    } else if (shoe === 'sneakers') {
+      rect(sx, 54, 5, 3, C.shoe);
+    } else if (shoe === 'maryjanes') {
+      rect(lx, 53, 3, 1, C.shoe);
+      rect(sx + 1, 55, 3, 1, C.shoe); rect(sx, 56, 5, 1, C.shoe);
+    } else if (shoe === 'kneeboots') {
+      rect(lx, 47, 3, 8, C.shoe);
+      rect(sx, 55, 5, 2, C.shoe);
+    } else if (shoe === 'sandals') {
+      rect(lx, 54, 3, 1, C.shoe);
+      rect(sx, 55, 5, 1, C.skin);
+      rect(sx, 56, 5, 1, C.shoe);
+    }
   });
   if (!legsCovered) {
     rect(12, 46, 12, 3, C.skin); rect(13, 49, 10, 1, C.skin); rect(17, 46, 1, 4, INK); rect(18, 46, 1, 4, C.skinSh);
@@ -306,17 +341,17 @@ export function buildDoll(look, blink = false) {
   } else if (bottom === 'pants') {
     rect(12, 37, 12, 9, B.c); rect(12, 37, 12, 1, B.hi);
     [13, 18].forEach(lx => { rect(lx, 46, 5, 9, B.c); rect(lx, 54, 5, 1, B.sh); });
-    px(17, 46, B.sh); px(17, 47, B.sh);
+    rect(17, 44, 1, 11, mix(B.c, B.sh, 0.45));
   } else if (bottom === 'wideleg') {
     rect(12, 37, 12, 9, B.c); rect(12, 37, 12, 1, B.hi);
     for (let r = 0; r < 9; r++) {
       const f = Math.floor(r * 0.35), c = r === 8 ? B.sh : B.c;
       rect(13 - f, 46 + r, 5 + f, 1, c); rect(18, 46 + r, 5 + f, 1, c);
     }
-    px(17, 46, B.sh); px(17, 47, B.sh); px(17, 48, B.sh);
+    rect(17, 44, 1, 11, mix(B.c, B.sh, 0.45));
   } else if (bottom === 'shorts') {
     rect(12, 37, 12, 12, B.c); rect(12, 37, 12, 1, B.hi); rect(12, 48, 12, 1, B.sh);
-    rect(17, 44, 1, 5, INK);
+    rect(17, 44, 1, 5, mix(B.c, B.sh, 0.45));
   }
 
   if (dress === 'sundress' || dress === 'slip') {
@@ -427,14 +462,18 @@ export function buildDoll(look, blink = false) {
   }
 
   const bang = hairline(style, tex, look.bangs, kind);
-  ell(17.5, 13.5, 7.5, 8.5, C.skin);
-  for (let yy = 4; yy <= 22; yy++) for (let xx = 9; xx <= 26; xx++) {
-    if (((xx - 17.5) / 7.5) ** 2 + ((yy - 13.5) / 8.5) ** 2 > 1) continue;
-    if (!bang(xx, yy)) continue;
+  const full = { thin: -0.6, medium: 0, full: 0.7, fuller: 1.3, fullest: 1.9 }[look.fullness] || 0;
+  const fy = 13.5, fry = 8.5, frx = 7.5 + full;
+  const inFace = (xx, yy) => ((xx - 17.5) / frx) ** 2 + ((yy - fy) / fry) ** 2 <= 1;
+  for (let yy = 4; yy <= 24; yy++) for (let xx = 8; xx <= 27; xx++) if (inFace(xx, yy)) px(xx, yy, C.skin);
+  const chin = Math.floor(fy + fry) + 1;
+  for (let yy = 4; yy <= 24; yy++) for (let xx = 8; xx <= 27; xx++) {
+    if (!inFace(xx, yy) || !bang(xx, yy)) continue;
     if (kind) px(xx, yy, inOval(xx, yy, OPENING[kind]) <= 1.45 ? (kind === 'amira' ? C.hairSh : C.hairMid) : C.hair);
+    else if (look.bangs && yy >= 6 && !FLUFFY.includes(tex) && (xx + (yy >> 2)) % 3 === 0) px(xx, yy, C.hairSh);
     else px(xx, yy, FLUFFY.includes(tex) && hash(xx, yy) % 5 === 0 ? C.hairHi : C.hair);
   }
-  if (!kind) rect(15, 23, 6, 1, C.skinSh);
+  if (!kind) rect(15, chin, 6, 1, C.skinSh);
   const eyePx = (xx, yy, c) => { if (!bang(xx, yy)) px(xx, yy, c); };
   rect(11, 10, 3, 1, C.brow);
   if (!bang(23, 10)) rect(22, 10, 3, 1, C.brow);
@@ -447,9 +486,59 @@ export function buildDoll(look, blink = false) {
     [['W','E','H','E'], ['W','E','E','E']].forEach((row, j) => row.forEach((k, i) => eyePx(11 + i, 13 + j, eyeCol(k))));
     [['E','H','E','W'], ['E','E','E','W']].forEach((row, j) => row.forEach((k, i) => eyePx(21 + i, 13 + j, eyeCol(k))));
   }
-  if (look.blushOn !== false) { rect(11, 15, 3, 2, C.blush); rect(22, 15, 3, 2, C.blush); }
+  if (look.blushOn) { rect(11, 15, 3, 2, C.blush); rect(22, 15, 3, 2, C.blush); }
   px(17, 16, C.nose); px(18, 16, C.nose);
   rect(16, 18, 4, 2, C.lip);
+  if (look.linerOn) {
+    const edge = mix(C.lip, look.liner, 0.4);
+    rect(16, 18, 4, 2, edge);
+    px(16, 18, look.liner); px(19, 18, look.liner); px(16, 19, look.liner); px(19, 19, look.liner);
+  }
+
+  if (hat) {
+    const W = tone(look.hijabColor || DEFAULT_LOOK.hijabColor);
+    const tuck = { beanie: 7, beret: 5, bucket: 7, cap: 7, sunhat: 7, bandana: 8 }[hat];
+    const hairish = [C.hair, C.hairSh, C.hairHi, C.hairMid];
+    for (let yy = -OY; yy <= tuck; yy++) for (let xx = 0; xx < GW; xx++)
+      if (hairish.includes(get(xx, yy))) px(xx, yy, null);
+    if (UPDOS.includes(style)) for (let yy = tuck; yy <= 14; yy++) for (let xx = 0; xx < GW; xx++)
+      if ((xx < 8 || xx > 27) && hairish.includes(get(xx, yy))) px(xx, yy, null);
+    const dome = (cx, cy, rx, ry, maxY, c) => {
+      for (let j = Math.floor(cy - ry); j <= Math.min(maxY, Math.ceil(cy + ry)); j++)
+        for (let i = Math.floor(cx - rx); i <= Math.ceil(cx + rx); i++)
+          if (((i - cx) / rx) ** 2 + ((j - cy) / ry) ** 2 <= 1) px(i, j, c);
+    };
+    if (hat === 'beanie') {
+      dome(17.5, 5, 10.5, 7, 6, W.c);
+      rect(7, 6, 22, 3, W.c);
+      for (let xx = 8; xx < 28; xx += 2) rect(xx, 6, 1, 3, W.sh);
+      ell(17.5, -3, 2.5, 2, W.hi);
+    } else if (hat === 'beret') {
+      ell(15.5, 2.5, 10.5, 3.5, W.c);
+      rect(8, 5, 17, 1, W.sh);
+      px(15, -2, W.sh); px(15, -1, W.sh);
+    } else if (hat === 'bucket') {
+      dome(17.5, 3, 8.5, 6, 6, W.c);
+      rect(5, 7, 26, 2, W.c); rect(5, 8, 26, 1, W.sh);
+      rect(9, 6, 18, 1, W.sh);
+    } else if (hat === 'cap') {
+      dome(17.5, 4, 9.5, 6.5, 7, W.c);
+      for (let yy = -2; yy <= 6; yy++) px(17, yy, W.sh);
+      px(17, -3, W.hi);
+      rect(8, 7, 20, 2, W.sh);
+    } else if (hat === 'sunhat') {
+      dome(17.5, 2.5, 8, 5.5, 5, W.c);
+      rect(10, 4, 16, 1, W.hi);
+      ell(17.5, 6.5, 16.5, 2.5, W.c);
+      rect(3, 7, 30, 1, W.sh);
+    } else if (hat === 'bandana') {
+      dome(17.5, 7.5, 10.5, 8, 8, W.c);
+      for (let yy = 0; yy <= 8; yy++) for (let xx = 7; xx <= 28; xx++)
+        if (get(xx, yy) === W.c && hash(xx, yy) % 7 === 0) px(xx, yy, W.hi);
+      rect(7, 8, 22, 1, W.sh);
+      rect(27, 9, 3, 2, W.c); px(29, 11, W.c); px(28, 11, W.sh);
+    }
+  }
 
   const widen = (row, col, n, left) => row.map((v, x) => left
     ? (x <= col - n ? row[x + n] : x <= col ? row[col] : v)

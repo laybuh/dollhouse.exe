@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { startRoom, DEFAULT_ROOM } from './room'
-import { DEFAULT_LOOK, HAIRS, HIJABS, TOPS, BOTTOMS, DRESSES, BODIES, GW, GH, buildDoll, drawDoll } from './girl'
+import { DEFAULT_LOOK, HAIRS, HIJABS, isHijab, TOPS, BOTTOMS, DRESSES, BODIES, FULLNESS, SHOES, GW, GH, buildDoll, drawDoll } from './girl'
 
 const STORE = 'dollie-look-v5'
 const HEX = /^#?([0-9a-f]{6})$/i
@@ -18,7 +18,7 @@ const HOW_TO = [
   ['', 'flip through the sections to mix and match pieces for your look.'],
   ['dresses vs. separates:', 'picking a dress swaps out the tops and bottoms, and picking tops or bottoms swaps them back in.'],
   ['colors:', 'use the color picker or type in a hex code to recolor any section.'],
-  ['room:', 'switch to the room colors to recolor the walls, floor, bed and rug.'],
+  ['room:', 'switch to the room colors to recolor the walls, floor, bed, rug, furniture, mirror and lamp.'],
   ['download', 'just your doll or download your whole room too.'],
   ['reset', 'brings back the default look.'],
   ['extras:', 'click dollie to make her hop, and click the lamp to turn the light on or off.'],
@@ -176,19 +176,18 @@ function HexInput({ label, value, onChange }) {
   )
 }
 
-function Stepper({ label, index, count, onStep, dim, zeroLabel, onAll }) {
+function Stepper({ label, onStep, dim, onAll }) {
   return (
     <div className={dim ? 'step step-dim' : 'step'}>
       <span className="step-label">{label}</span>
       <button type="button" className="mini-arrow" aria-label={`previous ${label}`} onClick={() => onStep(-1)}>&lt;</button>
-      <span className="step-count">{zeroLabel && index === 0 ? zeroLabel : zeroLabel ? `${index}/${count - 1}` : `${index + 1}/${count}`}</span>
       <button type="button" className="mini-arrow" aria-label={`next ${label}`} onClick={() => onStep(1)}>&gt;</button>
       <button type="button" className="all-btn" aria-label={`see all ${label}`} onClick={onAll}>all</button>
     </div>
   )
 }
 
-const CROPS = { hair: [0, 36, 3], hijab: [0, 36, 3] }
+const CROPS = { hair: [0, 36, 3], headwear: [0, 36, 3], face: [2, 28, 4], shoes: [44, 24, 3] }
 
 function Thumb({ look, crop }) {
   const ref = useRef(null)
@@ -261,22 +260,24 @@ function App() {
   }, [roomColors])
 
   const dressOn = look.dress !== 'none'
-  const hijabOn = look.hijab !== 'none'
+  const hijabOn = isHijab(look.hijab)
+  const headOn = look.hijab !== 'none'
   const swatches = [
     ['skin', 'skin'],
-    hijabOn ? ['hijabColor', 'hijab'] : ['hair', 'hair'],
-    ['brows', 'brows'], ['eyes', 'eyes'], ['lips', 'lips'], ['blush', 'blush'],
+    ...(hijabOn ? [] : [['hair', 'hair']]),
+    ...(headOn ? [['hijabColor', 'headwear']] : []),
+    ['brows', 'brows'], ['eyes', 'eyes'], ['lips', 'lips'], ['liner', 'lip liner'], ['blush', 'blush'],
     ...(dressOn ? [['dressColor', 'dress']] : [['topColor', 'top'], ['bottomColor', 'bottom']]),
-    ...(!dressOn && look.bottom === 'pleated' ? [['socks', 'socks']] : []),
+    ...(look.shoe === 'kneeboots' || (dressOn ? ['long', 'abaya'].includes(look.dress) : ['pants', 'wideleg', 'maxi'].includes(look.bottom)) ? [] : [['socks', 'socks']]),
     ['shoes', 'shoes']
   ]
-  const roomSwatches = [['wall', 'wall'], ['floor', 'floor'], ['bed', 'bed'], ['rug', 'rug']]
+  const roomSwatches = [['wall', 'wall glow'], ['floor', 'floor'], ['bed', 'bed'], ['rug', 'rug'], ['furniture', 'furniture'], ['mirror', 'mirror'], ['lamp', 'lamp']]
   const isRoom = roomSwatches.some(([key]) => key === pick)
   const active = (isRoom ? roomSwatches : swatches).find(([key]) => key === pick) || swatches[0]
   const activeValue = isRoom ? roomColors[active[0]] : look[active[0]]
   const setActive = (v) => isRoom
     ? setRoomColors(r => ({ ...r, [active[0]]: v }))
-    : setLook(l => ({ ...l, [active[0]]: v, ...(active[0] === 'blush' ? { blushOn: true } : {}) }))
+    : setLook(l => ({ ...l, [active[0]]: v, ...(active[0] === 'blush' ? { blushOn: true } : {}), ...(active[0] === 'liner' ? { linerOn: true } : {}), ...(active[0] === 'socks' ? { socksOn: true } : {}) }))
   const swatchButton = ([key, label], value) => (
     <button
       key={key}
@@ -296,8 +297,10 @@ function App() {
 
   const pickers = {
     body: () => BODIES.map(b => ({ id: b, label: b, on: look.body === b, look: { ...look, body: b }, apply: { body: b } })),
-    hair: () => HAIRS.map((h, i) => ({ id: i, label: String(i + 1), on: i === hairIndex && !hijabOn, look: { ...look, ...h, hijab: 'none' }, apply: { ...h, hijab: 'none' } })),
-    hijab: () => HIJABS.map(k => ({ id: k, label: k, empty: k === 'none', on: look.hijab === k, look: { ...look, hijab: k }, apply: { hijab: k } })),
+    face: () => FULLNESS.map(f => ({ id: f, label: f, on: look.fullness === f, look: { ...look, fullness: f }, apply: { fullness: f } })),
+    shoes: () => SHOES.map(s => ({ id: s, label: s, on: look.shoe === s, look: { ...look, shoe: s }, apply: { shoe: s } })),
+    hair: () => HAIRS.map((h, i) => ({ id: i, label: String(i + 1), on: i === hairIndex && !hijabOn, look: { ...look, ...h, ...(hijabOn ? { hijab: 'none' } : {}) }, apply: { ...h, ...(hijabOn ? { hijab: 'none' } : {}) } })),
+    headwear: () => HIJABS.map(k => ({ id: k, label: k, empty: k === 'none', on: look.hijab === k, look: { ...look, hijab: k }, apply: { hijab: k } })),
     tops: () => TOPS.map(t => ({ id: t, label: t, on: !dressOn && look.top === t, look: { ...look, top: t, dress: 'none' }, apply: { top: t, dress: 'none' } })),
     bottoms: () => BOTTOMS.map(b => ({ id: b, label: b, on: !dressOn && look.bottom === b, look: { ...look, bottom: b, dress: 'none' }, apply: { bottom: b, dress: 'none' } })),
     dresses: () => DRESSES.map(d => ({ id: d, label: d, empty: d === 'none', on: look.dress === d, look: { ...look, dress: d }, apply: { dress: d } }))
@@ -341,12 +344,14 @@ function App() {
                 ))}
               </div>
               <div className="steps only-avatar">
-                <Stepper label="body" index={BODIES.indexOf(look.body)} count={BODIES.length} onStep={stepIn('body', BODIES)} onAll={() => setPicker('body')} />
-                <Stepper label="hair" index={hairIndex} count={HAIRS.length} onStep={stepHair} dim={hijabOn} onAll={() => setPicker('hair')} />
-                <Stepper label="hijab" index={HIJABS.indexOf(look.hijab)} count={HIJABS.length} onStep={stepIn('hijab', HIJABS)} zeroLabel="off" onAll={() => setPicker('hijab')} />
-                <Stepper label="tops" index={TOPS.indexOf(look.top)} count={TOPS.length} onStep={stepIn('top', TOPS, { dress: 'none' })} dim={dressOn} onAll={() => setPicker('tops')} />
-                <Stepper label="bottoms" index={BOTTOMS.indexOf(look.bottom)} count={BOTTOMS.length} onStep={stepIn('bottom', BOTTOMS, { dress: 'none' })} dim={dressOn} onAll={() => setPicker('bottoms')} />
-                <Stepper label="dresses" index={DRESSES.indexOf(look.dress)} count={DRESSES.length} onStep={stepIn('dress', DRESSES)} zeroLabel="off" onAll={() => setPicker('dresses')} />
+                <Stepper label="body" onStep={stepIn('body', BODIES)} onAll={() => setPicker('body')} />
+                <Stepper label="face" onStep={stepIn('fullness', FULLNESS)} onAll={() => setPicker('face')} />
+                <Stepper label="hair" onStep={stepHair} dim={hijabOn} onAll={() => setPicker('hair')} />
+                <Stepper label="headwear" onStep={stepIn('hijab', HIJABS)} onAll={() => setPicker('headwear')} />
+                <Stepper label="tops" onStep={stepIn('top', TOPS, { dress: 'none' })} dim={dressOn} onAll={() => setPicker('tops')} />
+                <Stepper label="bottoms" onStep={stepIn('bottom', BOTTOMS, { dress: 'none' })} dim={dressOn} onAll={() => setPicker('bottoms')} />
+                <Stepper label="shoes" onStep={stepIn('shoe', SHOES)} onAll={() => setPicker('shoes')} />
+                <Stepper label="dresses" onStep={stepIn('dress', DRESSES)} onAll={() => setPicker('dresses')} />
               </div>
               <div className="palette">
                 <div className="swatches only-avatar">
@@ -361,6 +366,16 @@ function App() {
                 {active[0] === 'blush' && (
                   <button type="button" className="mini-toggle" aria-pressed={!look.blushOn} onClick={() => setLook(l => ({ ...l, blushOn: !l.blushOn }))}>
                     {look.blushOn ? 'remove blush' : 'add blush'}
+                  </button>
+                )}
+                {active[0] === 'socks' && (
+                  <button type="button" className="mini-toggle" aria-pressed={look.socksOn === false} onClick={() => setLook(l => ({ ...l, socksOn: l.socksOn === false }))}>
+                    {look.socksOn === false ? 'add socks' : 'remove socks'}
+                  </button>
+                )}
+                {active[0] === 'liner' && (
+                  <button type="button" className="mini-toggle" aria-pressed={look.linerOn} onClick={() => setLook(l => ({ ...l, linerOn: !l.linerOn }))}>
+                    {look.linerOn ? 'remove lip liner' : 'add lip liner'}
                   </button>
                 )}
               </div>

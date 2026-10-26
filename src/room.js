@@ -1,6 +1,6 @@
 import { GW, GH, DEFAULT_LOOK, buildDoll, shade } from './girl';
 
-export const DEFAULT_ROOM = { wall: '#9c5c7e', floor: '#1b131f', bed: '#cf7a93', rug: '#cf7a93' };
+export const DEFAULT_ROOM = { wall: '#9c5c7e', floor: '#1b131f', bed: '#cf7a93', rug: '#cf7a93', furniture: '#2c262f', mirror: '#c98a9d', lamp: '#ff9fd0' };
 
 export function startRoom(cv, grainCv) {
   const W = 407, H = 204, VX = 24;
@@ -68,6 +68,8 @@ export function startRoom(cv, grainCv) {
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   let SMOKE = [[26, 15, 32], [44, 25, 48], [74, 40, 66], [112, 62, 94], [156, 92, 126]];
   let RUG = P.pink;
+  const F = { mid: '#2c262f', dark: '#221c25', darker: '#171219', top: '#35303a', edge: '#3a3340', hi: '#4a4350', low: '#25202a', soft: '#2a242d' };
+  let GLASS = '#c98a9d', GLASS_HI = '#e3aab9', LAMP = '#ff9fd0', LAMP_RGB = '255,113,206', GLOW_RGB = '255,110,140', SHELF_RGB = '207,122,147';
   const PURPLE = [[24, 15, 36], [40, 26, 62], [66, 42, 104], [102, 70, 152], [140, 104, 190]];
   function drawSmokeWall() {
     const tt = still ? 0 : t;
@@ -180,19 +182,19 @@ export function startRoom(cv, grainCv) {
   }
 
   function bed() {
-    R(65, 108, 60, 32, P.mid);
-    R(64, 109, 62, 30, P.mid);
-    R(66, 107, 58, 1, '#3a3340');
+    R(65, 108, 60, 32, F.mid);
+    R(64, 109, 62, 30, F.mid);
+    R(66, 107, 58, 1, F.edge);
     R(68, 120, 22, 11, P.pink); R(69, 119, 20, 1, P.pinkL);
     R(94, 120, 25, 11, P.pink); R(95, 119, 23, 1, P.pinkL);
     R(90, 121, 4, 10, P.pinkD);
     R(61, 132, 67, 10, P.pinkD);
     R(62, 133, 65, 8, P.pink);
     R(61, 131, 67, 1, P.pinkL);
-    R(58, 141, 74, 22, P.dark);
-    R(58, 141, 74, 2, '#2a242d');
-    R(59, 163, 72, 5, P.darker);
-    R(60, 168, 8, 3, P.darker); R(122, 168, 8, 3, P.darker);
+    R(58, 141, 74, 22, F.dark);
+    R(58, 141, 74, 2, F.soft);
+    R(59, 163, 72, 5, F.darker);
+    R(60, 168, 8, 3, F.darker); R(122, 168, 8, 3, F.darker);
   }
 
   function rug() {
@@ -203,11 +205,11 @@ export function startRoom(cv, grainCv) {
   }
 
   function nightstand() {
-    R(169, 131, 35, 39, P.mid);
-    R(168, 130, 37, 3, '#35303a');
-    R(171, 138, 31, 14, P.dark); R(171, 154, 31, 13, P.dark);
-    R(184, 144, 5, 1, '#4a444f'); R(184, 160, 5, 1, '#4a444f');
-    R(171, 170, 4, 2, P.darker); R(198, 170, 4, 2, P.darker);
+    R(169, 131, 35, 39, F.mid);
+    R(168, 130, 37, 3, F.top);
+    R(171, 138, 31, 14, F.dark); R(171, 154, 31, 13, F.dark);
+    R(184, 144, 5, 1, F.hi); R(184, 160, 5, 1, F.hi);
+    R(171, 170, 4, 2, F.darker); R(198, 170, 4, 2, F.darker);
   }
 
   function lamp() {
@@ -220,53 +222,53 @@ export function startRoom(cv, grainCv) {
     if (lampOn) {
       x.globalCompositeOperation = 'lighter';
       const g = x.createRadialGradient(180, 115, 2, 180, 115, 18);
-      g.addColorStop(0, 'rgba(255,113,206,.35)'); g.addColorStop(1, 'rgba(255,113,206,0)');
+      g.addColorStop(0, `rgba(${LAMP_RGB},.35)`); g.addColorStop(1, `rgba(${LAMP_RGB},0)`);
       x.fillStyle = g; x.fillRect(160, 95, 40, 40);
       x.globalCompositeOperation = 'source-over';
     }
     pts.forEach(([dx, dy]) => {
       const edge = !has.has((dx + 1) + ',' + dy) || !has.has((dx - 1) + ',' + dy) || !has.has(dx + ',' + (dy + 1)) || !has.has(dx + ',' + (dy - 1));
-      if (edge) dot(178 + dx, 115 + dy, lampOn ? '#ff9fd0' : '#5a3a50');
+      if (edge) dot(178 + dx, 115 + dy, lampOn ? LAMP : '#5a3a50');
     });
-    R(177, 125, 2, 2, '#4a4350');
-    R(173, 127, 11, 3, '#2c262f'); R(173, 127, 11, 1, '#4a4350');
+    R(177, 125, 2, 2, F.hi);
+    R(173, 127, 11, 3, F.mid); R(173, 127, 11, 1, F.hi);
   }
 
   function mirror() {
-    arch(227, 108, 31, 60, '#171219');
-    arch(229, 110, 27, 56, '#2a2230');
-    arch(231, 112, 23, 52, '#c98a9d');
-    [[235,130],[236,129],[237,128],[238,127],[235,135],[236,134],[237,133]].forEach(([a, b]) => dot(a, b, '#e3aab9'));
-    R(226, 166, 33, 2, '#171219');
-    R(224, 160, 3, 8, '#171219'); R(258, 160, 3, 8, '#171219');
+    arch(227, 108, 31, 60, F.darker);
+    arch(229, 110, 27, 56, F.soft);
+    arch(231, 112, 23, 52, GLASS);
+    [[235,130],[236,129],[237,128],[238,127],[235,135],[236,134],[237,133]].forEach(([a, b]) => dot(a, b, GLASS_HI));
+    R(226, 166, 33, 2, F.darker);
+    R(224, 160, 3, 8, F.darker); R(258, 160, 3, 8, F.darker);
   }
 
   function dresser() {
-    R(286, 128, 87, 1, '#4a4350');
-    R(287, 129, 85, 2, '#35303a');
-    R(287, 131, 85, 1, P.darker);
-    x.globalAlpha = .75; R(289, 132, 81, 1, '#cf7a93'); x.globalAlpha = 1;
+    R(286, 128, 87, 1, F.hi);
+    R(287, 129, 85, 2, F.top);
+    R(287, 131, 85, 1, F.darker);
+    x.globalAlpha = .75; R(289, 132, 81, 1, `rgb(${SHELF_RGB})`); x.globalAlpha = 1;
     x.globalCompositeOperation = 'lighter';
     const dg = x.createLinearGradient(0, 133, 0, 142);
-    dg.addColorStop(0, 'rgba(207,122,147,.14)'); dg.addColorStop(1, 'rgba(207,122,147,0)');
+    dg.addColorStop(0, `rgba(${SHELF_RGB},.14)`); dg.addColorStop(1, `rgba(${SHELF_RGB},0)`);
     x.fillStyle = dg; x.fillRect(289, 133, 81, 9);
     x.globalCompositeOperation = 'source-over';
-    R(292, 133, 4, 37, '#2c262f'); R(292, 133, 1, 37, '#3a3340');
-    R(363, 133, 4, 37, '#2c262f'); R(363, 133, 1, 37, '#3a3340');
-    R(292, 153, 75, 2, '#2c262f'); R(292, 153, 75, 1, '#3a3340');
-    R(291, 170, 6, 2, P.darker); R(362, 170, 6, 2, P.darker);
-    R(338, 133, 24, 20, '#2c262f');
-    R(340, 135, 20, 7, '#221c25'); R(347, 138, 6, 1, '#4a4350');
-    R(340, 144, 20, 7, '#221c25'); R(347, 147, 6, 1, '#4a4350');
-    R(302, 144, 24, 9, '#25202a'); R(302, 144, 24, 1, '#3a3340');
+    R(292, 133, 4, 37, F.mid); R(292, 133, 1, 37, F.edge);
+    R(363, 133, 4, 37, F.mid); R(363, 133, 1, 37, F.edge);
+    R(292, 153, 75, 2, F.mid); R(292, 153, 75, 1, F.edge);
+    R(291, 170, 6, 2, F.darker); R(362, 170, 6, 2, F.darker);
+    R(338, 133, 24, 20, F.mid);
+    R(340, 135, 20, 7, F.dark); R(347, 138, 6, 1, F.hi);
+    R(340, 144, 20, 7, F.dark); R(347, 147, 6, 1, F.hi);
+    R(302, 144, 24, 9, F.low); R(302, 144, 24, 1, F.edge);
     R(304, 147, 17, 1, '#1c171e'); R(304, 149, 17, 1, '#1c171e');
     dot(323, 146, '#cf7a93');
-    R(297, 134, 1, 36, '#171219'); R(297, 170, 5, 1, '#171219');
+    R(297, 134, 1, 36, F.darker); R(297, 170, 5, 1, F.darker);
     const OX = 309, OY = 103;
     const L = (lx, ly, w, h, col) => R(OX + lx, OY + ly, w, h, col);
     const LD = (lx, ly, col) => dot(OX + lx, OY + ly, col);
     R(307, 101, 45, 26, '#0a070c');
-    R(307, 101, 45, 1, '#3a3340');
+    R(307, 101, 45, 1, F.edge);
 
     for (let ly = 3; ly < 21; ly++) {
       const k = (ly - 3) / 17;
@@ -316,11 +318,11 @@ export function startRoom(cv, grainCv) {
     L(10, 16, 10, 1, '#5a3a50'); L(10, 18, 6, 1, '#3a2536');
     if (Math.floor(t * 2) % 2) LD(17, 18, '#e08fa5');
 
-    R(303, 127, 53, 1, '#4a4350');
-    R(325, 127, 9, 1, '#2c262f');
+    R(303, 127, 53, 1, F.hi);
+    R(325, 127, 9, 1, F.mid);
     x.globalCompositeOperation = 'lighter';
     const lg = x.createRadialGradient(329, 114, 2, 329, 114, 34);
-    lg.addColorStop(0, 'rgba(207,122,147,.10)'); lg.addColorStop(1, 'rgba(207,122,147,0)');
+    lg.addColorStop(0, `rgba(${SHELF_RGB},.10)`); lg.addColorStop(1, `rgba(${SHELF_RGB},0)`);
     x.fillStyle = lg; x.fillRect(290, 80, 80, 60);
     x.globalCompositeOperation = 'source-over';
   }
@@ -359,8 +361,8 @@ export function startRoom(cv, grainCv) {
     if (lampLevel > 0.02) {
       x.globalCompositeOperation = 'lighter';
       g = x.createRadialGradient(186, 124, 2, 186, 124, 62);
-      g.addColorStop(0, `rgba(255,110,140,${.30 * lampLevel})`);
-      g.addColorStop(1, 'rgba(255,110,140,0)');
+      g.addColorStop(0, `rgba(${GLOW_RGB},${.30 * lampLevel})`);
+      g.addColorStop(1, `rgba(${GLOW_RGB},0)`);
       x.fillStyle = g; x.fillRect(118, 70, 140, 120);
       x.globalCompositeOperation = 'source-over';
     }
@@ -420,6 +422,15 @@ export function startRoom(cv, grainCv) {
       P.floor = room.floor;
       P.pink = room.bed; P.pinkL = shade(room.bed, 0.15); P.pinkD = shade(room.bed, -0.2);
       RUG = room.rug;
+      const fb = room.furniture;
+      Object.assign(F, { mid: fb, dark: shade(fb, -0.22), darker: shade(fb, -0.47), top: shade(fb, 0.04), edge: shade(fb, 0.07), hi: shade(fb, 0.13), low: shade(fb, -0.15), soft: shade(fb, -0.05) });
+      GLASS = room.mirror; GLASS_HI = shade(room.mirror, 0.3);
+      LAMP = room.lamp;
+      const ln = parseInt(room.lamp.slice(1), 16);
+      const lc = [ln >> 16, (ln >> 8) & 255, ln & 255], top = Math.max(1, ...lc);
+      LAMP_RGB = lc.map(v => Math.round(v * 255 / top)).join(',');
+      GLOW_RGB = room.lamp === '#ff9fd0' ? '255,110,140' : LAMP_RGB;
+      SHELF_RGB = room.lamp === '#ff9fd0' ? '207,122,147' : LAMP_RGB;
       wallT = -1;
     },
     setLook(next) {
