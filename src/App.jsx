@@ -344,7 +344,7 @@ function App() {
     ...(look.shoe === 'kneeboots' || (dressOn ? ['long', 'abaya'].includes(look.dress) : ['pants', 'wideleg', 'maxi'].includes(look.bottom)) ? [] : [['socks', 'socks']]),
     ['shoes', 'shoes']
   ]
-  const roomSwatches = [['wall', 'wall glow'], ['floor', 'floor'], ['bed', 'bed'], ['rug', 'rug'], ['furniture', 'furniture'], ['mirror', 'mirror'], ['lamp', 'lamp'], ['heart', 'heart'], ['computer', 'computer'], ['sign', 'sign']]
+  const roomSwatches = [['wall', 'wall'], ['floor', 'floor'], ['bed', 'bed'], ['rug', 'rug'], ['furniture', 'furniture'], ['mirror', 'mirror'], ['lamp', 'lamp'], ['heart', 'heart'], ['computer', 'computer'], ['sign', 'sign']]
   const isRoom = roomSwatches.some(([key]) => key === pick)
   const active = (isRoom ? roomSwatches : swatches).find(([key]) => key === pick) || swatches[0]
   const activeValue = isRoom ? roomColors[active[0]] : look[active[0]]
