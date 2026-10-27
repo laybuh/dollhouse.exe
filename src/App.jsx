@@ -399,8 +399,8 @@ function App() {
         </div>
 
         {rules && <RulesPage />}
-        <button type="button" className="rules-btn" aria-pressed={rules} onClick={() => setRules(r => !r)}>
-          {rules ? 'back' : 'rules'}
+        <button type="button" className="rules-btn" aria-pressed={rules} aria-label={rules ? 'back' : 'rules'} onClick={() => setRules(r => !r)}>
+          {rules ? 'back' : <><span className="rules-word">rules</span><span className="rules-q">?</span></>}
         </button>
 
         {playing && !rules && (
