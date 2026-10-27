@@ -353,7 +353,7 @@ function App() {
                 <Stepper label="tops" onStep={stepIn('top', TOPS, { dress: 'none' })} dim={dressOn} onAll={() => setPicker('tops')} />
                 <Stepper label="bottoms" onStep={stepIn('bottom', BOTTOMS, { dress: 'none' })} dim={dressOn} onAll={() => setPicker('bottoms')} />
                 <Stepper label="shoes" onStep={stepIn('shoe', SHOES)} onAll={() => setPicker('shoes')} />
-                <Stepper label="dresses" onStep={stepIn('dress', DRESSES)} onAll={() => setPicker('dresses')} />
+                <Stepper label="dresses" onStep={stepIn('dress', DRESSES)} dim={!dressOn} onAll={() => setPicker('dresses')} />
               </div>
               <div className="palette">
                 <div className="swatches only-avatar">
