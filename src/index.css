@@ -446,10 +446,10 @@ input:focus-visible {
 
 .hex-hint {
   font-family: var(--pixel);
-  font-size: max(11px, max(7px, 0.75cqw));
+  font-size: max(9px, 0.75cqw);
   line-height: 1.8;
   letter-spacing: 0.05cqw;
-  color: rgba(248, 211, 233, 0.75);
+  color: #f8d3e9;
 }
 
 .hex-hint span {
