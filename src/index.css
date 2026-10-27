@@ -141,18 +141,24 @@ input:focus-visible {
   justify-content: space-between;
   padding: 0.5cqw 0.6cqw 0.5cqw 1cqw;
   font-family: var(--pixel);
-  font-size: max(8px, 0.9cqw);
+  font-size: max(11px, max(8px, 0.9cqw));
   letter-spacing: 0.1cqw;
   color: #1a0a14;
   background: linear-gradient(90deg, #f0a8d2, #f8d3e9);
   border-bottom: 0.25cqw solid var(--pink-5);
 }
 
+.closet-bar h2 {
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
 .closet-close {
   width: max(16px, 2cqw);
   height: max(16px, 2cqw);
   font-family: var(--pixel);
-  font-size: max(8px, 1cqw);
+  font-size: max(11px, max(8px, 1cqw));
   line-height: 1;
   color: #1a0a14;
   background: #fff;
@@ -272,7 +278,7 @@ input:focus-visible {
   flex: 1;
   padding: 0.9cqw;
   font-family: var(--pixel);
-  font-size: max(8px, 0.85cqw);
+  font-size: max(11px, max(8px, 0.85cqw));
   color: #1a0a14;
   background: var(--pink-2);
   border: 0.2cqw solid var(--pink-1);
@@ -317,7 +323,7 @@ input:focus-visible {
 .mini-arrow,
 .mini-toggle {
   font-family: var(--pixel);
-  font-size: max(8px, 0.85cqw);
+  font-size: max(11px, max(8px, 0.85cqw));
   color: var(--pink-1);
   background: transparent;
   border: 0.2cqw solid var(--pink-2);
@@ -440,7 +446,7 @@ input:focus-visible {
 
 .hex-hint {
   font-family: var(--pixel);
-  font-size: max(7px, 0.75cqw);
+  font-size: max(11px, max(7px, 0.75cqw));
   line-height: 1.8;
   letter-spacing: 0.05cqw;
   color: rgba(248, 211, 233, 0.75);
@@ -612,13 +618,13 @@ input:focus-visible {
 
   .closet-bar {
     padding: 8px 10px;
-    font-size: 10px;
+    font-size: max(11px, 10px);
   }
 
   .closet-close {
     width: 24px;
     height: 24px;
-    font-size: 10px;
+    font-size: max(11px, 10px);
   }
 
   .steps {
@@ -674,7 +680,7 @@ input:focus-visible {
   }
 
   .hex-hint {
-    font-size: 8px;
+    font-size: max(11px, 8px);
   }
 
   .mini-toggle {
@@ -689,7 +695,7 @@ input:focus-visible {
 
   .btn {
     padding: 14px;
-    font-size: 10px;
+    font-size: max(11px, 10px);
   }
 
   .vn-box {
@@ -714,7 +720,7 @@ input:focus-visible {
 
 .swatch-group {
   font-family: var(--pixel);
-  font-size: max(7px, 0.75cqw);
+  font-size: max(11px, max(7px, 0.75cqw));
   letter-spacing: 0.1cqw;
   color: #f8d3e9;
 }
@@ -743,7 +749,7 @@ input:focus-visible {
   }
 
   .swatch-group {
-    font-size: 8px;
+    font-size: max(11px, 8px);
   }
 }
 
@@ -761,7 +767,7 @@ input:focus-visible {
     flex: 1;
     padding: 10px;
     font-family: var(--pixel);
-    font-size: 10px;
+    font-size: max(11px, 10px);
     letter-spacing: 1px;
     color: var(--pink-1);
     background: transparent;
@@ -809,7 +815,7 @@ input:focus-visible {
   padding: 0 0.5cqw;
   height: max(20px, 2.4cqw);
   font-family: var(--pixel);
-  font-size: max(7px, 0.7cqw);
+  font-size: max(11px, max(7px, 0.7cqw));
   color: var(--pink-1);
   background: transparent;
   border: 0.2cqw solid rgba(240, 168, 210, 0.5);
@@ -897,7 +903,7 @@ input:focus-visible {
   .all-btn {
     height: 40px;
     padding: 0 10px;
-    font-size: 9px;
+    font-size: max(11px, 9px);
   }
 
   .picker-grid {

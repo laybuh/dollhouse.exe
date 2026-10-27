@@ -333,7 +333,7 @@ function App() {
         {playing && !rules && (
           <section className="closet" aria-label="closet">
             <header className="closet-bar">
-              <span>closet.exe</span>
+              <h2>closet.exe</h2>
               <button type="button" className="closet-close" aria-label="Close closet" onClick={() => setPlaying(false)}>&times;</button>
             </header>
             <div className="closet-body" data-mode={mode}>
@@ -402,7 +402,7 @@ function App() {
 
       <div className="vn-box">
         <span className="vn-name">DOLLIE</span>
-        <p className="vn-line">{rules ? LINES.rules : playing ? LINES.playing : LINES.intro}</p>
+        <h1 className="vn-line">{rules ? LINES.rules : playing ? LINES.playing : LINES.intro}</h1>
       </div>
     </main>
   )
