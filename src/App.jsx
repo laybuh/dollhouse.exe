@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { startRoom, DEFAULT_ROOM } from './room'
-import { DEFAULT_LOOK, HAIRS, HIJABS, isHijab, TOPS, BOTTOMS, DRESSES, BODIES, FULLNESS, NECKS, SHOES, GW, GH, buildDoll, drawDoll } from './girl'
+import { DEFAULT_LOOK, HAIRS, HIJABS, isHijab, TOPS, BOTTOMS, DRESSES, BODIES, FULLNESS, NECKS, SHOES, GW, GH, buildDoll, drawDoll, shade } from './girl'
 
 const STORE = 'dollie-look-v5'
 const HEX = /^#?([0-9a-f]{6})$/i
@@ -14,15 +14,27 @@ const LINES = {
 }
 
 const HOW_TO = [
-  ['', <>press <b>play game</b> to open the closet, letting you start styling.</>],
+  ['', <>press the <b>play game</b> button to open the closet and start styling.</>],
   ['', 'flip through the sections to mix and match pieces for your look.'],
   ['dresses vs. separates:', 'picking a dress swaps out the tops and bottoms, and picking tops or bottoms swaps them back in.'],
   ['colors:', 'use the color picker or type in a hex code to recolor any section.'],
-  ['room:', 'switch to the room colors to recolor the walls, floor, bed, rug, furniture, mirror and lamp.'],
+  ['room:', 'switch to the room colors to recolor the walls, floor, bed, rug, furniture, mirror, lamp, heart, computer, and sign. the name box at the top of the closet changes what your sign says, and it shows up in your room download.'],
   ['download', 'just your doll or download your whole room too.'],
   ['reset', 'brings back the default look.'],
   ['extras:', 'click dollie to make her hop, and click the lamp to turn the light on or off.'],
   ['', 'your look saves automatically in this browser, so it will be here when you come back.']
+]
+
+const DESKTOP = [
+  ['move:', 'drag the closet.exe title bar to move it around the room.'],
+  ['resize:', 'drag any edge or corner of closet.exe to make it bigger or smaller. it stops shrinking at the size where everything still fits.'],
+  ['minimize:', 'press the dash to tuck closet.exe away at the bottom of the room so you can see your whole look. press the arrow on the little bar to bring it back.'],
+  ['maximize:', 'press the square to make closet.exe fill the whole screen, and press it again to return to its normal size.']
+]
+
+const MOBILE = [
+  ['closet:', 'closet.exe sits right under the room, so scroll down to find it. use the avatar and room tabs at the top to switch between styling your doll and styling your room.'],
+  ['look around:', 'tap the little arrow in the corner of the room to look left or right and see the rest of the room.']
 ]
 
 const USAGE = [
@@ -42,6 +54,15 @@ function RulesPage() {
         </ul>
       </div>
       <div className="rules-col">
+        <h2>controls</h2>
+        <h3>on desktop</h3>
+        <ul>
+          {DESKTOP.map(([term, text], i) => <li key={i}>{term && <b>{term}</b>} {text}</li>)}
+        </ul>
+        <h3>on mobile</h3>
+        <ul>
+          {MOBILE.map(([term, text], i) => <li key={i}>{term && <b>{term}</b>} {text}</li>)}
+        </ul>
         <h2>usage rules</h2>
         <ul>
           {USAGE.map(([term, text], i) => <li key={i}>{term && <b>{term}</b>} {text}</li>)}
@@ -103,7 +124,7 @@ function downloadLook(look) {
   saveCredited(out, 'dollie.png')
 }
 
-async function downloadRoom(room) {
+async function downloadRoom(room, colors) {
   await document.fonts.load('40px "Allura"')
   const c = document.createElement('canvas')
   c.width = room.width * ROOM_SCALE
@@ -123,14 +144,16 @@ async function downloadRoom(room) {
   ctx.fillStyle = v
   ctx.fillRect(-c.width, -c.height, c.width * 2, c.height * 2)
   ctx.restore()
-  ctx.font = `${Math.round(c.width * 0.07)}px "Allura"`
+  const text = (colors.signText || '').trim() || 'dollie.exe'
+  const sign = colors.sign || '#ff4fae'
+  ctx.font = `${Math.round(c.width * Math.min(0.07, 0.7 / text.length))}px "Allura"`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.lineWidth = Math.max(1, c.width * 0.0012)
-  ctx.strokeStyle = '#ffc4e1'
-  ctx.shadowColor = '#ff4fae'
+  ctx.strokeStyle = sign === '#ff4fae' ? '#ffc4e1' : shade(sign, 0.55)
+  ctx.shadowColor = sign
   ctx.shadowBlur = c.width * 0.012
-  for (let i = 0; i < 3; i++) ctx.strokeText('dollie.exe', c.width * 0.81, c.height * 0.18)
+  for (let i = 0; i < 3; i++) ctx.strokeText(text, c.width * 0.81, c.height * 0.18)
   saveCredited(c, 'dollie-room.png')
 }
 
@@ -242,6 +265,11 @@ function App() {
   const [picker, setPicker] = useState(null)
   const [rules, setRules] = useState(false)
   const [lookRight, setLookRight] = useState(false)
+  const [minimized, setMinimized] = useState(false)
+  const [maxed, setMaxed] = useState(false)
+  const [geo, setGeo] = useState(null)
+  const closetRef = useRef(null)
+  const dragRef = useRef(null)
 
   useEffect(() => {
     const room = startRoom(mainRef.current, grainRef.current)
@@ -259,6 +287,51 @@ function App() {
     save(ROOM_STORE, roomColors)
   }, [roomColors])
 
+  const signText = (roomColors.signText || '').trim() || 'dollie.exe'
+  const signStyle = {
+    fontSize: `${Math.min(7, 70 / signText.length)}cqw`,
+    ...(roomColors.sign && roomColors.sign !== '#ff4fae' ? { '--sign-hi': shade(roomColors.sign, 0.55), '--sign-mid': shade(roomColors.sign, 0.3), '--sign-deep': roomColors.sign } : {})
+  }
+
+  useEffect(() => {
+    const reset = () => setGeo(null)
+    window.addEventListener('resize', reset)
+    return () => window.removeEventListener('resize', reset)
+  }, [])
+
+  const begin = (mode, dir) => (e) => {
+    const el = closetRef.current
+    if (!el || maxed || minimized || e.target.closest('button') || window.matchMedia('(max-width: 700px)').matches) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    dragRef.current = { mode, dir, sx: e.clientX, sy: e.clientY, g: geo || { l: el.offsetLeft, t: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight } }
+  }
+
+  const drag = (e) => {
+    const d = dragRef.current
+    const el = closetRef.current
+    if (!d || !el) return
+    const pw = el.offsetParent.clientWidth
+    const ph = el.offsetParent.clientHeight
+    const minW = pw * 0.56
+    const minH = ph * 0.6
+    const dx = e.clientX - d.sx
+    const dy = e.clientY - d.sy
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(v, hi))
+    let { l, t, w, h } = d.g
+    if (d.mode === 'move') {
+      l = clamp(d.g.l + dx, 0, pw - w)
+      t = clamp(d.g.t + dy, 0, ph - h)
+    } else {
+      if (d.dir.includes('e')) w = clamp(d.g.w + dx, minW, pw - d.g.l)
+      if (d.dir.includes('s')) h = clamp(d.g.h + dy, minH, ph - d.g.t)
+      if (d.dir.includes('w')) { w = clamp(d.g.w - dx, minW, d.g.l + d.g.w); l = d.g.l + d.g.w - w }
+      if (d.dir.includes('n')) { h = clamp(d.g.h - dy, minH, d.g.t + d.g.h); t = d.g.t + d.g.h - h }
+    }
+    setGeo({ l, t, w, h })
+  }
+
+  const endDrag = () => { dragRef.current = null }
+
   const dressOn = look.dress !== 'none'
   const hijabOn = isHijab(look.hijab)
   const headOn = look.hijab !== 'none'
@@ -271,7 +344,7 @@ function App() {
     ...(look.shoe === 'kneeboots' || (dressOn ? ['long', 'abaya'].includes(look.dress) : ['pants', 'wideleg', 'maxi'].includes(look.bottom)) ? [] : [['socks', 'socks']]),
     ['shoes', 'shoes']
   ]
-  const roomSwatches = [['wall', 'wall glow'], ['floor', 'floor'], ['bed', 'bed'], ['rug', 'rug'], ['furniture', 'furniture'], ['mirror', 'mirror'], ['lamp', 'lamp']]
+  const roomSwatches = [['wall', 'wall glow'], ['floor', 'floor'], ['bed', 'bed'], ['rug', 'rug'], ['furniture', 'furniture'], ['mirror', 'mirror'], ['lamp', 'lamp'], ['heart', 'heart'], ['computer', 'computer'], ['sign', 'sign']]
   const isRoom = roomSwatches.some(([key]) => key === pick)
   const active = (isRoom ? roomSwatches : swatches).find(([key]) => key === pick) || swatches[0]
   const activeValue = isRoom ? roomColors[active[0]] : look[active[0]]
@@ -314,7 +387,7 @@ function App() {
           <div className={lookRight ? 'room room-right' : 'room'}>
             <canvas ref={mainRef} className="room-main" width="376" height="197" aria-label="Dollie's bedroom" />
             <canvas ref={grainRef} className="room-grain" width="376" height="197" aria-hidden="true" />
-            <span className="room-sign" aria-hidden="true">dollie.exe</span>
+            <span className="room-sign" aria-hidden="true" style={signStyle}>{signText}</span>
             <div className="room-vignette" aria-hidden="true" />
           </div>
           {!playing && !rules && (
@@ -331,12 +404,32 @@ function App() {
         </button>
 
         {playing && !rules && (
-          <section className="closet" aria-label="closet">
-            <header className="closet-bar">
+          <section ref={closetRef} className={`closet${minimized ? ' closet-min' : ''}${maxed && !minimized ? ' closet-max' : ''}`} aria-label="closet" style={geo && !maxed && !minimized ? { left: geo.l, top: geo.t, width: geo.w, height: geo.h, maxWidth: 'none', maxHeight: 'none' } : undefined}>
+            <header className="closet-bar" onPointerDown={begin('move')} onPointerMove={drag} onPointerUp={endDrag} onPointerCancel={endDrag}>
               <h2>closet.exe</h2>
-              <button type="button" className="closet-close" aria-label="Close closet" onClick={() => setPlaying(false)}>&times;</button>
+              <span className="closet-btns">
+                {minimized ? (
+                  <button type="button" className="closet-close" aria-label="Restore closet" onClick={() => setMinimized(false)}>&#9650;</button>
+                ) : (
+                  <>
+                    <button type="button" className="closet-close closet-min-btn" aria-label="Minimize closet" onClick={() => setMinimized(true)}>&ndash;</button>
+                    <button type="button" className="closet-close closet-max-btn" aria-label={maxed ? 'Restore closet size' : 'Maximize closet'} aria-pressed={maxed} onClick={() => setMaxed(m => !m)}>{maxed ? '❐' : '□'}</button>
+                    <button type="button" className="closet-close" aria-label="Close closet" onClick={() => setPlaying(false)}>&times;</button>
+                  </>
+                )}
+              </span>
             </header>
             <div className="closet-body" data-mode={mode}>
+              <label className="sign-name">
+                <span>neon sign label:</span>
+                <input
+                  type="text"
+                  value={roomColors.signText ?? 'dollie.exe'}
+                  maxLength={14}
+                  spellCheck="false"
+                  onChange={(e) => setRoomColors(r => ({ ...r, signText: e.target.value }))}
+                />
+              </label>
               <div className="mode-tabs">
                 {['avatar', 'room'].map(m => (
                   <button key={m} type="button" className={mode === m ? 'mode-tab mode-tab-on' : 'mode-tab'} aria-pressed={mode === m} onClick={() => { setMode(m); setPick(m === 'room' ? 'wall' : 'skin') }}>
@@ -356,6 +449,7 @@ function App() {
                 <Stepper label="dresses" onStep={stepIn('dress', DRESSES)} dim={!dressOn} onAll={() => setPicker('dresses')} />
               </div>
               <div className="palette">
+                <span className="swatch-group swatch-group-doll only-avatar">doll</span>
                 <div className="swatches only-avatar">
                   {swatches.map((s) => swatchButton(s, look[s[0]]))}
                 </div>
@@ -383,10 +477,13 @@ function App() {
               </div>
               <div className="closet-actions">
                 <button type="button" className="btn" onClick={() => downloadLook(look)}>download doll</button>
-                <button type="button" className="btn" onClick={() => downloadRoom(mainRef.current)}>download room</button>
+                <button type="button" className="btn" onClick={() => downloadRoom(mainRef.current, roomColors)}>download room</button>
                 <button type="button" className="btn btn-ghost" onClick={() => { setLook(DEFAULT_LOOK); setRoomColors(DEFAULT_ROOM) }}>reset</button>
               </div>
             </div>
+            {!minimized && !maxed && ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map((dir) => (
+              <span key={dir} className={`closet-handle closet-handle-${dir}`} aria-hidden="true" onPointerDown={begin('resize', dir)} onPointerMove={drag} onPointerUp={endDrag} onPointerCancel={endDrag} />
+            ))}
           </section>
         )}
       </div>

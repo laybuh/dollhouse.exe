@@ -1,6 +1,6 @@
 import { GW, GH, DEFAULT_LOOK, buildDoll, shade } from './girl';
 
-export const DEFAULT_ROOM = { wall: '#9c5c7e', floor: '#1b131f', bed: '#cf7a93', rug: '#cf7a93', furniture: '#2c262f', mirror: '#c98a9d', lamp: '#ff9fd0' };
+export const DEFAULT_ROOM = { wall: '#9c5c7e', floor: '#1b131f', bed: '#cf7a93', rug: '#cf7a93', furniture: '#2c262f', mirror: '#c98a9d', lamp: '#ff9fd0', heart: '#f27aa4', computer: '#cf7a93', sign: '#ff4fae', signText: 'dollie.exe' };
 
 export function startRoom(cv, grainCv) {
   const W = 407, H = 204, VX = 24;
@@ -69,6 +69,9 @@ export function startRoom(cv, grainCv) {
   let SMOKE = [[26, 15, 32], [44, 25, 48], [74, 40, 66], [112, 62, 94], [156, 92, 126]];
   let RUG = P.pink;
   const F = { mid: '#2c262f', dark: '#221c25', darker: '#171219', top: '#35303a', edge: '#3a3340', hi: '#4a4350', low: '#25202a', soft: '#2a242d' };
+  const HEART0 = ['#ff8fb8', '#f27aa4', '#e0668f'], HEART_HI0 = '#ffd0e0', HEART_GLOW0 = '255,110,160';
+  const CP0 = { b: '#cf7a93', l: '#e08fa5', d: '#a85a78', p1: '#d99aae', p2: '#e6b0c0', p3: '#f0ccd7' };
+  let HEART = HEART0, HEART_HI = HEART_HI0, HEART_GLOW = HEART_GLOW0, CP = CP0;
   let GLASS = '#c98a9d', GLASS_HI = '#e3aab9', LAMP = '#ff9fd0', LAMP_RGB = '255,113,206', GLOW_RGB = '255,110,140', SHELF_RGB = '207,122,147';
   const PURPLE = [[24, 15, 36], [40, 26, 62], [66, 42, 104], [102, 70, 152], [140, 104, 190]];
   function drawSmokeWall() {
@@ -115,7 +118,7 @@ export function startRoom(cv, grainCv) {
   }
 
   function painting() {
-    const HEART = [
+    const HEART_GRID = [
       '..XXXXX...XXXXX..',
       '.XXXXXXX.XXXXXXX.',
       'XXXXXXXXXXXXXXXXX',
@@ -136,13 +139,13 @@ export function startRoom(cv, grainCv) {
     R(61, 51, 32, 23, '#2a1f2c');
     x.globalCompositeOperation = 'lighter';
     const hg = x.createRadialGradient(77, 62, 2, 77, 62, 16);
-    hg.addColorStop(0, 'rgba(255,110,160,.22)'); hg.addColorStop(1, 'rgba(255,110,160,0)');
+    hg.addColorStop(0, `rgba(${HEART_GLOW},.22)`); hg.addColorStop(1, `rgba(${HEART_GLOW},0)`);
     x.fillStyle = hg; x.fillRect(61, 51, 32, 23);
     x.globalCompositeOperation = 'source-over';
-    HEART.forEach((row, ry) => {
-      for (let rx = 0; rx < row.length; rx++) if (row[rx] === 'X') dot(68 + rx, 55 + ry, ry >= 8 ? '#e0668f' : (ry >= 4 ? '#f27aa4' : '#ff8fb8'));
+    HEART_GRID.forEach((row, ry) => {
+      for (let rx = 0; rx < row.length; rx++) if (row[rx] === 'X') dot(68 + rx, 55 + ry, ry >= 8 ? HEART[2] : (ry >= 4 ? HEART[1] : HEART[0]));
     });
-    [[71,57],[72,57],[70,58],[71,58]].forEach(([hx, hy]) => dot(hx, hy, '#ffd0e0'));
+    [[71,57],[72,57],[70,58],[71,58]].forEach(([hx, hy]) => dot(hx, hy, HEART_HI));
     R(61, 51, 32, 1, 'rgba(0,0,0,.25)');
   }
 
@@ -281,42 +284,42 @@ export function startRoom(cv, grainCv) {
           if ((lx - bx) ** 2 + (ly - by) ** 2 <= br * br) LD(lx, ly, col);
       x.globalAlpha = 1;
     };
-    bloom(20, 24, 14, .22, '#cf7a93'); bloom(20, 24, 9, .22, '#cf7a93'); bloom(38, 4, 6, .12, '#cf7a93');
-    LD(5, 17, '#d99aae');
+    bloom(20, 24, 14, .22, CP.b); bloom(20, 24, 9, .22, CP.b); bloom(38, 4, 6, .12, CP.b);
+    LD(5, 17, CP.p1);
 
-    L(0, 0, 41, 2, '#08060a'); L(0, 2, 41, 1, '#cf7a93');
-    LD(1, 0, '#cf7a93'); LD(3, 0, '#cf7a93'); L(1, 1, 3, 1, '#cf7a93');
-    L(6, 1, 3, 1, '#d99aae'); L(10, 1, 4, 1, '#d99aae'); L(15, 1, 3, 1, '#d99aae'); L(19, 1, 3, 1, '#d99aae');
-    L(33, 0, 4, 2, '#cf7a93'); LD(37, 0, '#cf7a93'); L(38, 1, 2, 1, '#f0ccd7');
+    L(0, 0, 41, 2, '#08060a'); L(0, 2, 41, 1, CP.b);
+    LD(1, 0, CP.b); LD(3, 0, CP.b); L(1, 1, 3, 1, CP.b);
+    L(6, 1, 3, 1, CP.p1); L(10, 1, 4, 1, CP.p1); L(15, 1, 3, 1, CP.p1); L(19, 1, 3, 1, CP.p1);
+    L(33, 0, 4, 2, CP.b); LD(37, 0, CP.b); L(38, 1, 2, 1, CP.p3);
 
-    L(2, 4, 5, 4, '#cf7a93'); L(2, 4, 2, 1, '#e08fa5'); L(2, 5, 5, 1, '#e6b0c0'); L(2, 8, 5, 1, '#d99aae');
-    L(2, 10, 4, 5, '#cf7a93'); L(3, 11, 2, 3, '#140e18'); LD(3, 12, '#e08fa5'); L(2, 15, 5, 1, '#d99aae');
+    L(2, 4, 5, 4, CP.b); L(2, 4, 2, 1, CP.l); L(2, 5, 5, 1, CP.p2); L(2, 8, 5, 1, CP.p1);
+    L(2, 10, 4, 5, CP.b); L(3, 11, 2, 3, '#140e18'); LD(3, 12, CP.l); L(2, 15, 5, 1, CP.p1);
     for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++)
       if (dx * dx + dy * dy <= 9.5 && (dx - 2) ** 2 + (dy + 1) ** 2 > 6) LD(37 + dx, 9 + dy, '#efe2fa');
 
     x.globalAlpha = .55; L(13, 5, 21, 11, '#000000'); x.globalAlpha = 1;
-    L(12, 4, 21, 2, '#cf7a93'); L(12, 5, 21, 1, '#a85a78');
-    LD(13, 4, '#08060a'); LD(15, 4, '#f0ccd7'); LD(17, 4, '#d99aae'); L(22, 4, 8, 1, '#f0ccd7');
+    L(12, 4, 21, 2, CP.b); L(12, 5, 21, 1, CP.d);
+    LD(13, 4, '#08060a'); LD(15, 4, CP.p3); LD(17, 4, CP.p1); L(22, 4, 8, 1, CP.p3);
     L(12, 6, 21, 9, '#140e18');
     L(14, 13, 9, 1, '#3a2536');
     for (let i = 0; i < 5; i++) {
       const h = 2 + Math.round(2 + 2 * Math.sin(t * 0.5 + i * 1.3));
-      L(14 + i * 2, 13 - h, 1, h, i % 2 ? '#d99aae' : '#cf7a93');
+      L(14 + i * 2, 13 - h, 1, h, i % 2 ? CP.p1 : CP.b);
     }
     L(14, 14, 9, 1, '#47303f');
     L(25, 7, 5, 5, '#2a1a2c');
-    LD(26, 8, '#cf7a93'); LD(28, 8, '#cf7a93'); L(26, 9, 3, 1, '#cf7a93'); LD(27, 10, '#cf7a93');
-    for (let i = 0; i < 2; i++) { const h = 1 + Math.floor(1.5 + 1.5 * Math.sin(t * 1.3 + i * 1.7)); L(31 + i, 11 - h, 1, h, '#e08fa5'); }
+    LD(26, 8, CP.b); LD(28, 8, CP.b); L(26, 9, 3, 1, CP.b); LD(27, 10, CP.b);
+    for (let i = 0; i < 2; i++) { const h = 1 + Math.floor(1.5 + 1.5 * Math.sin(t * 1.3 + i * 1.7)); L(31 + i, 11 - h, 1, h, CP.l); }
     L(24, 13, 8, 1, '#3a2536');
-    L(24, 13, 1 + Math.floor(((t * 0.4) % 1) * 7), 1, '#cf7a93');
+    L(24, 13, 1 + Math.floor(((t * 0.4) % 1) * 7), 1, CP.b);
     L(24, 14, 5, 1, '#5a3a50');
 
     x.globalAlpha = .55; L(9, 14, 15, 7, '#000000'); x.globalAlpha = 1;
-    L(8, 13, 16, 2, '#e08fa5'); L(8, 14, 16, 1, '#a85a78');
-    LD(9, 13, '#08060a'); L(11, 13, 5, 1, '#f0ccd7'); LD(22, 13, '#08060a');
+    L(8, 13, 16, 2, CP.l); L(8, 14, 16, 1, CP.d);
+    LD(9, 13, '#08060a'); L(11, 13, 5, 1, CP.p3); LD(22, 13, '#08060a');
     L(8, 15, 16, 6, '#140e18');
     L(10, 16, 10, 1, '#5a3a50'); L(10, 18, 6, 1, '#3a2536');
-    if (Math.floor(t * 2) % 2) LD(17, 18, '#e08fa5');
+    if (Math.floor(t * 2) % 2) LD(17, 18, CP.l);
 
     R(303, 127, 53, 1, F.hi);
     R(325, 127, 9, 1, F.mid);
@@ -426,6 +429,15 @@ export function startRoom(cv, grainCv) {
       Object.assign(F, { mid: fb, dark: shade(fb, -0.22), darker: shade(fb, -0.47), top: shade(fb, 0.04), edge: shade(fb, 0.07), hi: shade(fb, 0.13), low: shade(fb, -0.15), soft: shade(fb, -0.05) });
       GLASS = room.mirror; GLASS_HI = shade(room.mirror, 0.3);
       LAMP = room.lamp;
+      const hc = room.heart || '#f27aa4';
+      if (hc.toLowerCase() === '#f27aa4') { HEART = HEART0; HEART_HI = HEART_HI0; HEART_GLOW = HEART_GLOW0; }
+      else {
+        const hn = parseInt(hc.slice(1), 16);
+        HEART = [shade(hc, 0.13), hc, shade(hc, -0.1)]; HEART_HI = shade(hc, 0.55);
+        HEART_GLOW = [hn >> 16, (hn >> 8) & 255, hn & 255].join(',');
+      }
+      const cc = room.computer || '#cf7a93';
+      CP = cc.toLowerCase() === '#cf7a93' ? CP0 : { b: cc, l: shade(cc, 0.15), d: shade(cc, -0.2), p1: shade(cc, 0.12), p2: shade(cc, 0.25), p3: shade(cc, 0.42) };
       const ln = parseInt(room.lamp.slice(1), 16);
       const lc = [ln >> 16, (ln >> 8) & 255, ln & 255], top = Math.max(1, ...lc);
       LAMP_RGB = lc.map(v => Math.round(v * 255 / top)).join(',');
