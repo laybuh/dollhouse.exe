@@ -124,6 +124,7 @@ input:focus-visible {
 
 .closet {
   position: absolute;
+  z-index: 7;
   top: 4cqw;
   left: calc(100% - 59.8cqw);
   display: flex;
