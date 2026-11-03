@@ -102,8 +102,8 @@ const ROPE_BUNS = ['braidbun', 'locbun', 'twistbun'];
 const OPENING = { wrap: [7.2, 7.6], amira: [6.9, 7.4], long: [7.2, 7.6] };
 const inOval = (xx, yy, [rx, ry]) => ((xx - 17.5) / rx) ** 2 + ((yy - 14.5) / ry) ** 2;
 
-function hairline(style, tex, bangs, kind) {
-  if (style === 'hijab') return (xx, yy) => inOval(xx, yy, OPENING[kind]) > 1;
+function hairline(style, tex, bangs, opening) {
+  if (style === 'hijab') return (xx, yy) => inOval(xx, yy, opening) > 1;
   if (style === 'bald') return () => false;
   if (MASC[style]) return MASC[style].line;
   if (EXTRAS[style]) return EXTRAS[style].line;
@@ -138,6 +138,9 @@ export function buildDoll(look, blink = false) {
         if (((i - cx) / rx) ** 2 + ((j - cy) / ry) ** 2 <= 1) px(i, j, c);
   };
   const kind = isHijab(look.hijab) ? look.hijab : null;
+  const full = { thin: -0.6, medium: 0, full: 0.7, fuller: 1.3, fullest: 1.9 }[look.fullness] || 0;
+  const fw = full * 0.6;
+  const opening = kind ? [OPENING[kind][0] + full, OPENING[kind][1]] : null;
   const hat = HATS.includes(look.hijab) ? look.hijab : null;
   const base = kind ? look.hijabColor || DEFAULT_LOOK.hijabColor : look.hair;
   const C = {
@@ -177,7 +180,7 @@ export function buildDoll(look, blink = false) {
   const ropes = (xs, topOf, bottomOf, kind) => xs.forEach((x0, i) => rope(x0, topOf(x0), bottomOf(x0), kind, i));
 
   if (style === 'hijab') {
-    ell(17.5, 12, kind === 'amira' ? 10.5 : 11.5, kind === 'amira' ? 12 : 12.5, C.hair);
+    ell(17.5, 12, (kind === 'amira' ? 10.5 : 11.5) + fw, kind === 'amira' ? 12 : 12.5, C.hair);
   } else if (STRANDS.includes(style)) {
     const w = ropeW[style];
     ell(17.5, 11.5, 11, 11, C.hairSh);
@@ -442,17 +445,17 @@ export function buildDoll(look, blink = false) {
   if (kind === 'wrap' || kind === 'amira') {
     const snug = kind === 'amira';
     for (let yy = 18; yy <= 25; yy++) {
-      const w = yy <= 21 ? (snug ? 10 : 11) : (snug ? 7.5 : 8.5) + (yy - 22) * 0.6;
+      const w = (yy <= 21 ? (snug ? 10 : 11) : (snug ? 7.5 : 8.5) + (yy - 22) * 0.6) + fw;
       for (let xx = Math.round(17.5 - w); xx <= Math.round(17.5 + w - 1); xx++) px(xx, yy, C.hair);
     }
-    rect(snug ? 9 : 8, 25, snug ? 18 : 20, 1, C.hairSh);
-    if (!snug) for (let yy = 21; yy <= 24; yy++) { px(11, yy, C.hairSh); px(24, yy, C.hairSh); }
+    rect(Math.round((snug ? 9 : 8) - fw), 25, Math.round((snug ? 18 : 20) + fw * 2), 1, C.hairSh);
+    if (!snug) for (let yy = 21; yy <= 24; yy++) { px(Math.round(11 - fw), yy, C.hairSh); px(Math.round(24 + fw), yy, C.hairSh); }
   } else if (kind === 'long') {
     for (let yy = 18; yy <= 31; yy++) {
-      const w = yy <= 21 ? 11 : yy <= 27 ? 9 + (yy - 22) * 0.4 : 11 - (yy - 27) * 1.6;
+      const w = (yy <= 21 ? 11 : yy <= 27 ? 9 + (yy - 22) * 0.4 : 11 - (yy - 27) * 1.6) + fw;
       for (let xx = Math.round(17.5 - w); xx <= Math.round(17.5 + w - 1); xx++) px(xx, yy, yy === 31 || (yy > 27 && Math.abs(xx - 17.5) > w - 1.5) ? C.hairSh : C.hair);
     }
-    for (let yy = 21; yy <= 29; yy++) { px(Math.round(11 + (yy - 21) * 0.4), yy, C.hairSh); px(Math.round(24 - (yy - 21) * 0.4), yy, C.hairSh); }
+    for (let yy = 21; yy <= 29; yy++) { px(Math.round(11 - fw + (yy - 21) * 0.4), yy, C.hairSh); px(Math.round(24 + fw - (yy - 21) * 0.4), yy, C.hairSh); }
   }
   if (sleeve === 'long' || sleeve === 'bell') {
     rect(9, 39, 2, 2, C.skin); rect(25, 39, 2, 2, C.skin);
@@ -463,15 +466,14 @@ export function buildDoll(look, blink = false) {
     ropes(style === 'braids' ? [7, 10] : [7], () => 19, (x0) => end - hash(x0, 3) % 4, style);
   }
 
-  const bang = hairline(style, tex, look.bangs, kind);
-  const full = { thin: -0.6, medium: 0, full: 0.7, fuller: 1.3, fullest: 1.9 }[look.fullness] || 0;
+  const bang = hairline(style, tex, look.bangs, opening);
   const fy = 13.5, fry = 8.5, frx = 7.5 + full;
   const inFace = (xx, yy) => ((xx - 17.5) / frx) ** 2 + ((yy - fy) / fry) ** 2 <= 1;
   for (let yy = 4; yy <= 24; yy++) for (let xx = 8; xx <= 27; xx++) if (inFace(xx, yy)) px(xx, yy, C.skin);
   const chin = Math.floor(fy + fry) + 1;
   for (let yy = 4; yy <= 24; yy++) for (let xx = 8; xx <= 27; xx++) {
     if (!inFace(xx, yy) || !bang(xx, yy)) continue;
-    if (kind) px(xx, yy, inOval(xx, yy, OPENING[kind]) <= 1.45 ? (kind === 'amira' ? C.hairSh : C.hairMid) : C.hair);
+    if (kind) px(xx, yy, inOval(xx, yy, opening) <= 1.45 ? (kind === 'amira' ? C.hairSh : C.hairMid) : C.hair);
     else if (look.bangs && yy >= 6 && !FLUFFY.includes(tex) && (xx + (yy >> 2)) % 3 === 0) px(xx, yy, C.hairSh);
     else px(xx, yy, FLUFFY.includes(tex) && hash(xx, yy) % 5 === 0 ? C.hairHi : C.hair);
   }
