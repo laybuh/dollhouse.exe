@@ -40,7 +40,7 @@ export const DEFAULT_LOOK = {
   body: 'curvy', shoe: 'boots', socksOn: true, fullness: 'medium', neck: 'slim', blushOn: false, linerOn: false, liner: '#5a2a1e',
   hairStyle: 'wavy', hairLength: 'medium', bangs: false, hijab: 'none',
   top: 'tee', bottom: 'pleated', dress: 'none',
-  skin: '#b39169', hair: '#2a1f21', hijabColor: '#141114', lips: '#8b4a2f', blush: '#b28562',
+  skin: '#c19f77', hair: '#2a1f21', hijabColor: '#141114', lips: '#8b4a2f', blush: '#c09370',
   brows: '#3a2420', eyes: '#4a2f2c',
   topColor: '#2a232f', bottomColor: '#1f1a24', dressColor: '#2a232f', socks: '#1f1a24', shoes: '#15111a'
 };
